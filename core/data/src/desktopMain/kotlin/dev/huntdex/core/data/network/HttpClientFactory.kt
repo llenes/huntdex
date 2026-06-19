@@ -1,3 +1,5 @@
+@file:JvmName("HttpClientFactoryDesktop")
+
 package dev.huntdex.core.data.network
 
 import io.ktor.client.HttpClient
