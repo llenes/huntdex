@@ -39,3 +39,26 @@ jobs:
 
       - name: Build Desktop app
         run: ./gradlew :desktopApp:compileKotlinDesktop --no-daemon
+
+  ios-build:
+    name: iOS Build Check
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-read-only: false
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build iOS framework (simulator)
+        run: ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64 --no-daemon

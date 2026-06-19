@@ -25,6 +25,7 @@ rootProject.name = "huntdex"
 
 include(":app")
 include(":desktopApp")
+include(":shared")
 include(":core:domain")
 include(":core:data")
 include(":core:navigation")

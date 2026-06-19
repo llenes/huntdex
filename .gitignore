@@ -16,6 +16,11 @@ local.properties
 xcuserdata/
 *.xcworkspace/xcuserdata/
 
+# iOS / CocoaPods
+Pods/
+iosApp/iosApp.xcworkspace/
+DerivedData/
+
 # Legacy entries
 .kotlin/
 **/build/

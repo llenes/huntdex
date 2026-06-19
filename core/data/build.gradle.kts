@@ -9,6 +9,9 @@ kotlin {
     jvmToolchain(17)
     androidTarget()
     jvm("desktop")
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
 
     sourceSets {
         commonMain.dependencies {
@@ -32,6 +35,11 @@ kotlin {
                 implementation(libs.ktor.client.java)
                 implementation(libs.sqldelight.sqlite.driver)
             }
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+            implementation(libs.sqldelight.native.driver)
+            implementation(libs.koin.core)
         }
     }
 }
