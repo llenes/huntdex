@@ -31,16 +31,14 @@ class IosHomeScreen : Screen {
             verticalArrangement = Arrangement.Center
         ) {
             Text("Huntdex iOS", style = MaterialTheme.typography.headlineLarge)
-            Spacer(Modifier.height(8.dp))
-            Text("Phase 0 - iOS scaffold", style = MaterialTheme.typography.bodyMedium)
             Spacer(Modifier.height(24.dp))
-            Button(onClick = { screenModel.navigateToDetail() }) {
-                Text("Ver detalle de prueba")
+            Button(onClick = { screenModel.navigateToPokemonList() }) {
+                Text("Abrir Pokédex")
             }
         }
     }
 }
 
 class IosHomeScreenModel(private val navigator: AppNavigator) : ScreenModel {
-    fun navigateToDetail() = navigator.navigateTo(Destination.PokemonDetail(id = 1))
+    fun navigateToPokemonList() = navigator.navigateTo(Destination.PokemonList)
 }

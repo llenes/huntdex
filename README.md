@@ -16,7 +16,8 @@ Primary targets: **Android**, **Desktop (JVM)**, and **iOS**. Web is planned for
 | Navigation | [Voyager](https://voyager.adriel.cafe/) 1.1.0-beta02 | Screen-based navigation, isolated behind `AppNavigator` interface |
 | Local Database | [SQLDelight](https://cashapp.github.io/sqldelight/) 2.0.2 | Typesafe SQL, KMP-native, offline-first cache |
 | Networking | [Ktor Client](https://ktor.io/docs/client-create-new-application.html) 3.0.3 | KMP HTTP client for PokéAPI v2 |
-| Serialization | [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization) 1.7.3 | JSON parsing for API responses |
+| Serialization | [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization) 1.7.3 | JSON parsing for API responses and SQLDelight JSON cache |
+| Image Loading | [Coil 3](https://coil-kt.github.io/coil/) 3.0.4 | KMP async image loading with Ktor network backend |
 | DI | [Koin](https://insert-koin.io/) 3.5.6 | Multiplatform-native dependency injection |
 | Auth & Sync | [Supabase](https://supabase.com/) *(Phase 4)* | Optional user accounts and cross-device sync |
 | Build | Gradle 8.9 + Kotlin DSL + Version Catalogs | Reproducible builds, typesafe dependency management |
@@ -268,15 +269,14 @@ StateFlow emits new HuntingSessionState(count = N+1)  →  UI recomposes
 CREATE TABLE pokemon_entry (
   id         INTEGER PRIMARY KEY,
   name       TEXT    NOT NULL,
-  sprite_url TEXT,
-  cached_at  INTEGER NOT NULL
+  sprite_url TEXT    NOT NULL
 );
 
 -- Full detail stored as JSON blob (avoids schema migrations for PokéAPI changes)
+-- Includes types, stats, abilities, evolution chain, and location encounters
 CREATE TABLE pokemon_detail (
-  id        INTEGER PRIMARY KEY REFERENCES pokemon_entry(id),
-  data      TEXT    NOT NULL,   -- kotlinx.serialization JSON
-  cached_at INTEGER NOT NULL
+  id   INTEGER PRIMARY KEY,
+  data TEXT    NOT NULL   -- PokemonDetail serialized via kotlinx.serialization
 );
 
 -- Shiny hunting sessions
@@ -311,7 +311,7 @@ CREATE TABLE hunt_daily_log (
 | Phase | Status | Goal |
 |---|---|---|
 | **Phase 0 — Infrastructure** | ✅ Complete | KMP project compiles, navigation contract established, two test screens run on Android + Desktop + iOS simulator |
-| **Phase 1 — Pokédex MVP** | 🔜 Next | Paginated Pokémon list with search + generation filter; full detail screen (stats, types, abilities, evolutions, locations by game); progressive SQLDelight cache |
+| **Phase 1 — Pokédex MVP** | ✅ Complete | Paginated Pokémon list with search + generation filter; full detail screen (stats, types, abilities, evolutions, locations by game); progressive SQLDelight cache |
 | **Phase 2 — Full Encyclopedia** | ⬜ Planned | Moves, Items, Locations, Games features fully implemented |
 | **Phase 3 — Shiny Hunting** | ⬜ Planned | Session management, counters, daily logs, hunter profile with global stats |
 | **Phase 4 — Auth & Sync** | ⬜ Planned | Supabase auth (email + Google/Apple), cross-device sync for hunting data |
@@ -321,27 +321,25 @@ CREATE TABLE hunt_daily_log (
 
 ## Improvement Suggestions
 
-### Near-term (Phase 1)
+### Near-term (Phase 2)
 
-- **Repository interface in `core:domain`** — The `PokemonRepository` interface needs to be defined before Phase 1 implementation starts. Follow the same pattern as `AppNavigator`: interface in `:core:domain`, implementation in `:core:data`.
-- **`Result<T>` wrapper in `core:common`** — All use cases should return `Result<T>` (or a custom sealed class) instead of raw types, so the UI can distinguish loading/success/error uniformly without try/catch in ScreenModels.
-- **Pagination strategy** — Consider a `Pager`-style abstraction in `:core:common` so all list screens (Pokémon, Moves, Items) share the same paging logic rather than duplicating offset/limit handling.
-- **Coroutine scope discipline** — ScreenModels use `screenModelScope` from Voyager. Make sure all network/DB calls go through this scope so they're cancelled when the screen leaves the backstack.
+- **`Result<T>` wrapper in `core:common`** — ScreenModels currently use `runCatching` inline. Extract a shared `Result<T>` sealed class so all features handle loading/success/error uniformly.
+- **Pagination abstraction** — `PokemonListScreenModel` implements offset-based pagination directly. Before Phase 2 adds more list screens (Moves, Items), extract a `Pager` abstraction in `:core:common` to avoid duplication.
+- **Generation filter cache** — `getPokemonByGeneration` is network-only. Cache generation→Pokémon mappings in a `generation_pokemon` table so repeated filter changes don't re-hit the API.
+- **Search across all Pokémon** — Current search filters only loaded pages. A proper search would query `pokemon_entry` via the `searchPokemon` SQL query (already defined in schema), which searches the full local cache.
 
 ### Architecture
 
 - **`popTo(inclusive = true)` not yet implemented** — `VoyagerNavigatorAdapter.popTo` has a TODO. The inclusive case needs an extra `navigator.pop()` call after `popUntil`. Low priority until multi-level deep navigation is needed.
 - **Desktop `DatabaseDriverFactory` creates schema on every launch** — `HuntdexDatabase.Schema.create(driver)` in the Desktop driver will throw on the second launch when the file already exists. Replace with `migrateOrCreate` or a manual version-check (`PRAGMA user_version`) before Phase 3 ships.
-- **Stale `Navigator` reference on Activity recreation** — The `DesktopNavigatorAdapter` and `VoyagerNavigatorAdapter` hold a direct `Navigator` reference. On Android config change, the old adapter (still in Koin as a `single`) holds a reference to the previous `Navigator`. For Phase 0 this is safe (single Activity), but should be revisited before adding multi-window Desktop support.
+- **Stale `Navigator` reference on Activity recreation** — The `DesktopNavigatorAdapter` and `VoyagerNavigatorAdapter` hold a direct `Navigator` reference. On Android config change, the old adapter (still in Koin as a `single`) holds a reference to the previous `Navigator`. Safe for now (single Activity), but revisit before multi-window Desktop support.
+- **`Divider` → `HorizontalDivider`** — `PokemonDetailScreen` uses the deprecated `Divider` composable. Rename to `HorizontalDivider` (available in Material3).
 - **`@Destination` annotation processor** — Consider generating the `Destination.toScreen()` mapper at compile time to eliminate the `when` boilerplate as destinations grow.
 
 ### Testing
 
-- **No unit tests yet** — Phase 0 scaffolds the project structure but includes zero test files. The highest-value first tests to write:
-  1. `HomeScreenModel` — intent → state (pure unit test, no framework needed)
-  2. `VoyagerNavigatorAdapter.getResult` — verifies no spurious nulls for non-matching keys
-  3. SQLDelight in-memory driver tests — verify cache read/write round-trips
-- **Desktop test infrastructure** — The CI runs `:core:*:desktopTest` which currently returns `NO-SOURCE`. Add the first test to `:core:domain` to prove the Desktop JUnit pipeline actually executes.
+- **Repository and mapper unit tests** — `PokemonRepositoryImpl` and `PokemonMapper` have no tests yet. Highest-value additions: cache-hit/miss paths using an in-memory SQLite driver, `flattenEvolutionChain` with branching evolutions (e.g., Eevee), and `extractPokeApiId` edge cases.
+- **Error path coverage** — ScreenModel tests cover only the happy path. Add tests for `onFailure` branches and `Retry` intent to verify error → loading → success transitions.
 
 ### CI/CD
 
@@ -394,9 +392,10 @@ Then select an iPhone simulator in Xcode and press **⌘R** to build and run.
 ### Running Tests
 
 ```bash
-./gradlew :core:domain:desktopTest       # Desktop unit tests
-./gradlew :core:domain:testDebugUnitTest # Android unit tests
-./gradlew build                          # Full build + all tests
+./gradlew :core:domain:desktopTest         # Domain model unit tests (3 tests)
+./gradlew :feature:pokedex:desktopTest     # Pokédex ScreenModel unit tests (8 tests)
+./gradlew :core:domain:testDebugUnitTest   # Android unit tests
+./gradlew build                            # Full build + all tests
 ```
 
 ---

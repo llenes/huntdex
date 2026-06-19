@@ -32,8 +32,10 @@ kotlin {
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.koin)
             implementation(libs.coroutines.core)
+            implementation(projects.core.domain)
             implementation(projects.core.navigation)
             implementation(projects.core.data)
+            implementation(projects.feature.pokedex)
         }
     }
 }

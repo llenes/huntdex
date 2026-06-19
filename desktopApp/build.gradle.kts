@@ -13,12 +13,15 @@ kotlin {
             dependencies {
                 implementation(compose.desktop.currentOs)
                 implementation(compose.material3)
+                implementation(projects.core.domain)
                 implementation(projects.core.navigation)
                 implementation(projects.core.data)
+                implementation(projects.feature.pokedex)
                 implementation(libs.koin.core)
                 implementation(libs.voyager.navigator)
                 implementation(libs.voyager.koin)
                 implementation(libs.coroutines.core)
+                implementation(libs.coroutines.swing)
             }
         }
     }

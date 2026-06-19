@@ -24,11 +24,9 @@ class DesktopHomeScreen : Screen {
             verticalArrangement = Arrangement.Center
         ) {
             Text("Huntdex Desktop", style = MaterialTheme.typography.headlineLarge)
-            Spacer(Modifier.height(16.dp))
-            Text("Phase 0 — Desktop scaffold")
             Spacer(Modifier.height(24.dp))
-            Button(onClick = { screenModel.navigateToDetail() }) {
-                Text("Ver detalle de prueba")
+            Button(onClick = { screenModel.navigateToPokemonList() }) {
+                Text("Abrir Pokédex")
             }
         }
     }
@@ -37,7 +35,7 @@ class DesktopHomeScreen : Screen {
 class DesktopHomeScreenModel(
     private val navigator: AppNavigator
 ) : ScreenModel {
-    fun navigateToDetail() {
-        navigator.navigateTo(Destination.PokemonDetail(id = 1))
+    fun navigateToPokemonList() {
+        navigator.navigateTo(Destination.PokemonList)
     }
 }
