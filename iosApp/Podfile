@@ -3,5 +3,5 @@ platform :ios, '16.0'
 use_frameworks!
 
 target 'iosApp' do
-  pod 'HuntdexKit', :path => '../shared'
+  pod 'shared', :path => '../shared'
 end
