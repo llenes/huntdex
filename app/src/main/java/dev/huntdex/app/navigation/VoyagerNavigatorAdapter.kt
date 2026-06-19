@@ -5,7 +5,7 @@ import dev.huntdex.core.navigation.AppNavigator
 import dev.huntdex.core.navigation.Destination
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
 class VoyagerNavigatorAdapter(
@@ -24,10 +24,8 @@ class VoyagerNavigatorAdapter(
 
     override fun popTo(destination: Destination, inclusive: Boolean) {
         val targetScreen = destination.toScreen()
-        navigator.popUntil { screen ->
-            if (inclusive) screen::class == targetScreen::class
-            else screen::class == targetScreen::class
-        }
+        navigator.popUntil { screen -> screen::class == targetScreen::class }
+        // TODO: inclusive=true should pop one additional screen; requires screen-stack access
     }
 
     override fun <T> setResult(key: String, value: T) {
@@ -37,6 +35,6 @@ class VoyagerNavigatorAdapter(
     @Suppress("UNCHECKED_CAST")
     override fun <T> getResult(key: String): Flow<T?> =
         results
-            .filterIsInstance<Pair<String, Any?>>()
-            .map { (k, v) -> if (k == key) v as? T else null }
+            .filter { (k, _) -> k == key }
+            .map { (_, v) -> v as? T }
 }
