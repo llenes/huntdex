@@ -10,20 +10,16 @@ import kotlinx.coroutines.flow.asStateFlow
 data class HomeState(val count: Int = 0)
 
 sealed interface HomeIntent {
-    data object NavigateToDetail : HomeIntent
+    data object NavigateToPokemonList : HomeIntent
 }
 
-class HomeScreenModel(
-    private val navigator: AppNavigator
-) : ScreenModel {
-
+class HomeScreenModel(private val navigator: AppNavigator) : ScreenModel {
     private val _state = MutableStateFlow(HomeState())
     val state: StateFlow<HomeState> = _state.asStateFlow()
 
     fun onIntent(intent: HomeIntent) {
         when (intent) {
-            is HomeIntent.NavigateToDetail ->
-                navigator.navigateTo(Destination.PokemonDetail(id = 1))
+            is HomeIntent.NavigateToPokemonList -> navigator.navigateTo(Destination.PokemonList)
         }
     }
 }
