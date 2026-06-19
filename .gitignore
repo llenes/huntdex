@@ -1,0 +1,28 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Android
+local.properties
+*.keystore
+
+# IDE
+.idea/
+*.iml
+.DS_Store
+
+# KMP
+xcuserdata/
+*.xcworkspace/xcuserdata/
+
+# iOS / CocoaPods
+Pods/
+iosApp/iosApp.xcworkspace/
+DerivedData/
+
+# Legacy entries
+.kotlin/
+**/build/
+captures/
+.cxx/
