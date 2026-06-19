@@ -14,9 +14,11 @@ fun toMoveDetail(dto: MoveDetailDto, contestEffectDto: ContestEffectDto?): MoveD
         ?.flavorText?.replace("\n", " ")?.replace("", " ") ?: ""
 
     val learnedBy = dto.learnedByPokemon.map { learned ->
-        val pokemonId = learned.pokemon.url.extractPokeApiId()
-        val methods = learned.versionDetails.map { it.moveLearnMethod.name }.distinct()
-        LearnedByPokemon(pokemonId, learned.pokemon.name, methods)
+        LearnedByPokemon(
+            id = learned.url.extractPokeApiId(),
+            name = learned.name,
+            learnMethods = emptyList()
+        )
     }.sortedBy { it.id }
 
     val contestEffect = if (dto.contestType != null && contestEffectDto != null) {

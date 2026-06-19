@@ -15,10 +15,9 @@ data class MoveDetailDto(
     @SerialName("damage_class") val damageClass: NamedApiResourceDto,
     @SerialName("effect_entries") val effectEntries: List<MoveEffectEntryDto>,
     @SerialName("flavor_text_entries") val flavorTextEntries: List<MoveFlavorTextEntryDto>,
-    @SerialName("learned_by_pokemon") val learnedByPokemon: List<MoveLearnedByDto>,
+    @SerialName("learned_by_pokemon") val learnedByPokemon: List<NamedApiResourceDto>,
     @SerialName("contest_type") val contestType: NamedApiResourceDto?,
-    @SerialName("contest_effect") val contestEffect: ApiResourceDto?,
-    @SerialName("super_contest_effect") val superContestEffect: ApiResourceDto?
+    @SerialName("contest_effect") val contestEffect: ApiResourceDto?
 )
 
 @Serializable
@@ -31,18 +30,5 @@ data class MoveEffectEntryDto(
 data class MoveFlavorTextEntryDto(
     @SerialName("flavor_text") val flavorText: String,
     val language: NamedApiResourceDto,
-    @SerialName("version_group") val versionGroup: NamedApiResourceDto
-)
-
-@Serializable
-data class MoveLearnedByDto(
-    val pokemon: NamedApiResourceDto,
-    @SerialName("version_details") val versionDetails: List<MoveVersionDetailDto>
-)
-
-@Serializable
-data class MoveVersionDetailDto(
-    @SerialName("level_learned_at") val levelLearnedAt: Int,
-    @SerialName("move_learn_method") val moveLearnMethod: NamedApiResourceDto,
     @SerialName("version_group") val versionGroup: NamedApiResourceDto
 )
