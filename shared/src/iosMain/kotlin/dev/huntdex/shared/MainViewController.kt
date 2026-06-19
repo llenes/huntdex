@@ -20,13 +20,14 @@ fun MainViewController(): UIViewController {
     startKoin {
         modules(dataModule, iosDataModule)
     }
-    return ComposeUIViewController {
+    return ComposeUIViewController(configure = { enforceStrictPlistSanityCheck = false }) {
         MaterialTheme {
             Navigator(IosHomeScreen()) { navigator ->
                 val adapter = remember { IosNavigatorAdapter(navigator) }
-                DisposableEffect(Unit) {
-                    val module = iosAppModule(adapter)
-                    loadKoinModules(module)
+                val module = remember(adapter) {
+                    iosAppModule(adapter).also { loadKoinModules(it) }
+                }
+                DisposableEffect(module) {
                     onDispose { unloadKoinModules(module) }
                 }
                 CurrentScreen()
