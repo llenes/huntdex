@@ -20,10 +20,12 @@ kotlin {
             implementation(libs.serialization.json)
             implementation(libs.sqldelight.runtime)
             implementation(libs.sqldelight.coroutines.extensions)
+            implementation(libs.koin.core)
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.android)
             implementation(libs.sqldelight.android.driver)
+            implementation(libs.koin.android)
         }
         val desktopMain by getting {
             dependencies {
