@@ -1,14 +1,65 @@
+-- ============================================================
+-- Pokémon List Cache
+-- ============================================================
+CREATE TABLE pokemon_entry (
+  id         INTEGER PRIMARY KEY,
+  name       TEXT    NOT NULL,
+  sprite_url TEXT    NOT NULL
+);
+
+insertPokemonEntry:
+INSERT OR IGNORE INTO pokemon_entry (id, name, sprite_url)
+VALUES (?, ?, ?);
+
+selectPokemonPage:
+SELECT id, name, sprite_url
+FROM pokemon_entry
+ORDER BY id
+LIMIT :limit OFFSET :offset;
+
+selectPokemonByIds:
+SELECT id, name, sprite_url
+FROM pokemon_entry
+WHERE id IN :ids
+ORDER BY id;
+
+searchPokemon:
+SELECT id, name, sprite_url
+FROM pokemon_entry
+WHERE name LIKE '%' || :query || '%'
+ORDER BY id;
+
+-- ============================================================
+-- Pokémon Detail Cache (full object serialized as JSON)
+-- ============================================================
+CREATE TABLE pokemon_detail (
+  id   INTEGER PRIMARY KEY,
+  data TEXT    NOT NULL      -- kotlinx.serialization JSON of PokemonDetail
+);
+
+insertPokemonDetail:
+INSERT OR REPLACE INTO pokemon_detail (id, data)
+VALUES (?, ?);
+
+selectPokemonDetail:
+SELECT data
+FROM pokemon_detail
+WHERE id = ?;
+
+-- ============================================================
+-- Shiny Hunting Sessions (Phase 0, unchanged)
+-- ============================================================
 CREATE TABLE hunt_session (
-  id TEXT PRIMARY KEY,
-  pokemon_id INTEGER NOT NULL,
-  pokemon_name TEXT NOT NULL,
-  game TEXT NOT NULL,
-  method TEXT NOT NULL,
-  mode TEXT NOT NULL CHECK(mode IN ('simple', 'advanced')),
-  count INTEGER NOT NULL DEFAULT 0,
-  status TEXT NOT NULL CHECK(status IN ('active', 'completed', 'abandoned')),
-  notes TEXT,
+  id           TEXT    PRIMARY KEY,
+  pokemon_id   INTEGER NOT NULL,
+  pokemon_name TEXT    NOT NULL,
+  game         TEXT    NOT NULL,
+  method       TEXT    NOT NULL,
+  mode         TEXT    NOT NULL CHECK(mode IN ('simple', 'advanced')),
+  count        INTEGER NOT NULL DEFAULT 0,
+  status       TEXT    NOT NULL CHECK(status IN ('active', 'completed', 'abandoned')),
+  notes        TEXT,
   charm_active INTEGER NOT NULL DEFAULT 0,
-  started_at INTEGER NOT NULL,
+  started_at   INTEGER NOT NULL,
   completed_at INTEGER
 );
