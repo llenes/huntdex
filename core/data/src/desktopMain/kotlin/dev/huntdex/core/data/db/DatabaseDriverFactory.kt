@@ -39,6 +39,33 @@ actual class DatabaseDriverFactory {
                         data TEXT NOT NULL
                     )
                 """.trimIndent(), 0)
+                driver.execute(null, """
+                    CREATE TABLE move_entry (
+                        id INTEGER PRIMARY KEY,
+                        name TEXT NOT NULL
+                    )
+                """.trimIndent(), 0)
+                driver.execute(null, """
+                    CREATE TABLE move_detail (
+                        id INTEGER PRIMARY KEY,
+                        data TEXT NOT NULL
+                    )
+                """.trimIndent(), 0)
+            }
+            "move_entry" !in tables -> {
+                // Phase 1 database — add the Phase 2 Move cache tables
+                driver.execute(null, """
+                    CREATE TABLE move_entry (
+                        id INTEGER PRIMARY KEY,
+                        name TEXT NOT NULL
+                    )
+                """.trimIndent(), 0)
+                driver.execute(null, """
+                    CREATE TABLE move_detail (
+                        id INTEGER PRIMARY KEY,
+                        data TEXT NOT NULL
+                    )
+                """.trimIndent(), 0)
             }
             // else: all tables present, nothing to do
         }
