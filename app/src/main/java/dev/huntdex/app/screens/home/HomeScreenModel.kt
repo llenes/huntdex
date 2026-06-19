@@ -1,13 +1,11 @@
 package dev.huntdex.app.screens.home
 
 import cafe.adriel.voyager.core.model.ScreenModel
-import cafe.adriel.voyager.core.model.screenModelScope
 import dev.huntdex.core.navigation.AppNavigator
 import dev.huntdex.core.navigation.Destination
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 data class HomeState(val count: Int = 0)
 

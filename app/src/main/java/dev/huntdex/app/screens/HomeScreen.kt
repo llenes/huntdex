@@ -20,7 +20,7 @@ import cafe.adriel.voyager.koin.koinScreenModel
 import dev.huntdex.app.screens.home.HomeIntent
 import dev.huntdex.app.screens.home.HomeScreenModel
 
-class HomeScreen : Screen {
+class HomeScreen : Screen, java.io.Serializable {
     @Composable
     override fun Content() {
         val screenModel = koinScreenModel<HomeScreenModel>()
