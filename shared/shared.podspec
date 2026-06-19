@@ -44,8 +44,6 @@ Pod::Spec.new do |spec|
                 if [ -z "$JAVA_HOME" ] || [ ! -d "$JAVA_HOME" ]; then
                   if [ -d "$HOME/.sdkman/candidates/java/current" ]; then
                     export JAVA_HOME="$HOME/.sdkman/candidates/java/current"
-                  else
-                    export JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null) || true
                   fi
                 fi
                 set -ev
