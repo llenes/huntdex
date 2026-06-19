@@ -2,7 +2,7 @@
 
 A Kotlin Multiplatform (KMP) + Compose Multiplatform application that combines a complete **Pokémon encyclopedia** powered by PokéAPI with a dedicated **shiny hunting tracker** for logging encounters, sessions, and statistics.
 
-Primary targets: **Android** and **Desktop (JVM)**. iOS and Web are planned for a later phase.
+Primary targets: **Android**, **Desktop (JVM)**, and **iOS**. Web is planned for a later phase.
 
 ---
 
@@ -10,14 +10,14 @@ Primary targets: **Android** and **Desktop (JVM)**. iOS and Web are planned for 
 
 | Layer | Technology | Purpose |
 |---|---|---|
-| UI | [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/) 1.7.0 | Shared declarative UI across Android and Desktop |
-| Language | [Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html) 2.0.21 | Single codebase compiled to Android (JVM) and Desktop (JVM) |
+| UI | [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/) 1.7.0 | Shared declarative UI across Android, Desktop, and iOS |
+| Language | [Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html) 2.0.21 | Single codebase compiled to Android (JVM), Desktop (JVM), and iOS (Kotlin/Native) |
 | Architecture | Clean Architecture + MVI | Strict separation of concerns; unidirectional data flow |
 | Navigation | [Voyager](https://voyager.adriel.cafe/) 1.1.0-beta02 | Screen-based navigation, isolated behind `AppNavigator` interface |
 | Local Database | [SQLDelight](https://cashapp.github.io/sqldelight/) 2.0.2 | Typesafe SQL, KMP-native, offline-first cache |
 | Networking | [Ktor Client](https://ktor.io/docs/client-create-new-application.html) 3.0.3 | KMP HTTP client for PokéAPI v2 |
 | Serialization | [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization) 1.7.3 | JSON parsing for API responses |
-| DI | [Koin](https://insert-koin.io/) 4.0.0 | Multiplatform-native dependency injection |
+| DI | [Koin](https://insert-koin.io/) 3.5.6 | Multiplatform-native dependency injection |
 | Auth & Sync | [Supabase](https://supabase.com/) *(Phase 4)* | Optional user accounts and cross-device sync |
 | Build | Gradle 8.9 + Kotlin DSL + Version Catalogs | Reproducible builds, typesafe dependency management |
 | CI | GitHub Actions | Compile + unit test on every push/PR |
@@ -148,6 +148,13 @@ huntdex/
 │           │   └── DestinationMapper.kt
 │           └── screens/                 # Phase 0 placeholder screens
 │
+├── iosApp/                       # iOS application entry point (Xcode project)
+│   ├── Podfile                          # CocoaPods: pod 'shared'
+│   ├── Podfile.lock
+│   └── iosApp/
+│       ├── iOSApp.swift                 # SwiftUI @main entry point
+│       └── ContentView.swift            # Hosts MainViewController (Compose)
+│
 ├── desktopApp/                   # Desktop (JVM) application entry point
 │   └── src/desktopMain/kotlin/dev/huntdex/desktopapp/
 │       ├── main.kt                      # Compose Desktop application {}
@@ -172,6 +179,12 @@ huntdex/
 │   ├── navigation/               # Destination + AppNavigator (pure KMP, no Voyager)
 │   ├── ui/                       # Design system: colors, typography, shared components
 │   └── common/                   # Extensions, Result wrapper, coroutine utils
+│
+├── shared/                       # iOS shared framework (Compose Multiplatform for iOS)
+│   ├── shared.podspec                   # CocoaPods spec — built by Gradle, consumed by Xcode
+│   └── src/
+│       ├── commonMain/           # Shared Compose UI logic
+│       └── iosMain/              # MainViewController, iOS DI module, iOS navigator adapter
 │
 ├── feature/
 │   ├── pokedex/                  # Pokémon list/detail, evolutions, locations by game
@@ -297,12 +310,12 @@ CREATE TABLE hunt_daily_log (
 
 | Phase | Status | Goal |
 |---|---|---|
-| **Phase 0 — Infrastructure** | ✅ Complete | KMP project compiles, navigation contract established, two test screens run on Android + Desktop |
+| **Phase 0 — Infrastructure** | ✅ Complete | KMP project compiles, navigation contract established, two test screens run on Android + Desktop + iOS simulator |
 | **Phase 1 — Pokédex MVP** | 🔜 Next | Paginated Pokémon list with search + generation filter; full detail screen (stats, types, abilities, evolutions, locations by game); progressive SQLDelight cache |
 | **Phase 2 — Full Encyclopedia** | ⬜ Planned | Moves, Items, Locations, Games features fully implemented |
 | **Phase 3 — Shiny Hunting** | ⬜ Planned | Session management, counters, daily logs, hunter profile with global stats |
 | **Phase 4 — Auth & Sync** | ⬜ Planned | Supabase auth (email + Google/Apple), cross-device sync for hunting data |
-| **Phase 5 — iOS & Web** | ⬜ Planned | iOS adaptation, Kotlin/WASM web target, deep links |
+| **Phase 5 — Web** | ⬜ Planned | Kotlin/WASM web target, deep links |
 
 ---
 
@@ -343,14 +356,15 @@ CREATE TABLE hunt_daily_log (
 
 ### Prerequisites
 
-- JDK 17+
+- JDK 17+ (via SDKMAN, Homebrew, or official installer)
 - Android Studio Hedgehog or later (for Android target)
 - Android SDK (API 26+)
+- Xcode 15+ with CocoaPods (`gem install cocoapods`) — for iOS target
 
 ### Setup
 
 ```bash
-git clone https://github.com/luislenes/huntdex.git
+git clone https://github.com/llenes/huntdex.git
 cd huntdex
 cp local.properties.example local.properties
 # Edit local.properties and set sdk.dir to your Android SDK path
@@ -359,6 +373,23 @@ cp local.properties.example local.properties
 ./gradlew :app:installDebug              # Install Android app on connected device/emulator
 ./gradlew :desktopApp:run                # Launch Desktop app
 ```
+
+### iOS Setup
+
+```bash
+# 1. Generate the Kotlin/Native framework stub
+./gradlew :shared:generateDummyFramework
+
+# 2. Install CocoaPods dependencies
+cd iosApp && pod install
+
+# 3. Open the workspace (NOT the .xcodeproj)
+open iosApp.xcworkspace
+```
+
+Then select an iPhone simulator in Xcode and press **⌘R** to build and run.
+
+> **Note for SDKMAN users:** Xcode's script phases run with a restricted PATH that does not include SDKMAN's Java. The `shared.podspec` already exports `JAVA_HOME` from `$HOME/.sdkman/candidates/java/current` automatically. If you use a different Java installation method and see "Unable to locate a Java Runtime", update the JAVA_HOME detection block in `shared/shared.podspec`.
 
 ### Running Tests
 
