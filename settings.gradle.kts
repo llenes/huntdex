@@ -24,6 +24,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "huntdex"
 
 include(":app")
+include(":desktopApp")
 include(":core:domain")
 include(":core:data")
 include(":core:navigation")

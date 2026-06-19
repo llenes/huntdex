@@ -36,3 +36,6 @@ jobs:
 
       - name: Run Android unit tests
         run: ./gradlew :core:domain:testDebugUnitTest :core:navigation:testDebugUnitTest --no-daemon
+
+      - name: Build Desktop app
+        run: ./gradlew :desktopApp:compileKotlinDesktop --no-daemon
