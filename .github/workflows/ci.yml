@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, phase-* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-read-only: false
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build all modules
+        run: ./gradlew build --no-daemon
+
+      - name: Run Desktop tests
+        run: ./gradlew :core:domain:desktopTest :core:navigation:desktopTest :core:common:desktopTest --no-daemon
+
+      - name: Run Android unit tests
+        run: ./gradlew :core:domain:testDebugUnitTest :core:navigation:testDebugUnitTest --no-daemon

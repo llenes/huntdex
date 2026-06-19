@@ -1,10 +1,23 @@
+# Gradle
 .gradle/
-.kotlin/
 build/
-**/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Android
 local.properties
+*.keystore
+
+# IDE
 .idea/
 *.iml
 .DS_Store
+
+# KMP
+xcuserdata/
+*.xcworkspace/xcuserdata/
+
+# Legacy entries
+.kotlin/
+**/build/
 captures/
 .cxx/
