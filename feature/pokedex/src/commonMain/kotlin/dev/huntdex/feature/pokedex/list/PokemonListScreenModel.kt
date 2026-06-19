@@ -35,12 +35,17 @@ class PokemonListScreenModel(
             is PokemonListIntent.Search -> _state.update { it.copy(searchQuery = intent.query) }
             is PokemonListIntent.FilterByGeneration -> applyGenerationFilter(intent.generationId)
             is PokemonListIntent.SelectPokemon -> navigator.navigateTo(Destination.PokemonDetail(intent.id))
-            is PokemonListIntent.Retry -> loadFirstPage()
+            is PokemonListIntent.Retry -> {
+                val gen = _state.value.selectedGeneration
+                if (gen != null) applyGenerationFilter(gen)
+                else loadFirstPage()
+            }
         }
     }
 
     private fun loadFirstPage() {
-        _state.update { PokemonListState(isLoading = true) }
+        val currentQuery = _state.value.searchQuery
+        _state.update { PokemonListState(isLoading = true, searchQuery = currentQuery) }
         scope.launch {
             runCatching { repository.getPokemonPage(PAGE_SIZE, 0) }
                 .onSuccess { entries ->

@@ -30,7 +30,7 @@ fun toPokemonDetail(
         .firstOrNull { it.language.name == "en" }
         ?.flavorText
         ?.replace("\n", " ")
-        ?.replace("", " ")
+        ?.replace("\u000C", " ")
         ?: ""
 
     return PokemonDetail(
