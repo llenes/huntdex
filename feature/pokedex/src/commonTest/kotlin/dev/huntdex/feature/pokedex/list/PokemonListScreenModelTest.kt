@@ -16,8 +16,9 @@ import kotlin.test.assertTrue
 
 class FakeAppNavigator : AppNavigator {
     val destinations = mutableListOf<Destination>()
+    var backCalled = false
     override fun navigateTo(destination: Destination) { destinations += destination }
-    override fun navigateBack() {}
+    override fun navigateBack() { backCalled = true }
     override fun popTo(destination: Destination, inclusive: Boolean) {}
     override fun <T> setResult(key: String, value: T) {}
     override fun <T> getResult(key: String): Flow<T?> = throw NotImplementedError()
