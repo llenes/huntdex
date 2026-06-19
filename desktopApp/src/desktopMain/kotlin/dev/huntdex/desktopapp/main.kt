@@ -16,21 +16,23 @@ import org.koin.core.context.loadKoinModules
 import org.koin.core.context.startKoin
 import org.koin.core.context.unloadKoinModules
 
-fun main() = application {
+fun main() {
     startKoin {
         modules(dataModule, desktopDataModule)
     }
-
-    Window(onCloseRequest = ::exitApplication, title = "Huntdex") {
-        MaterialTheme {
-            Navigator(DesktopHomeScreen()) { navigator ->
-                val adapter = remember { DesktopNavigatorAdapter(navigator) }
-                DisposableEffect(Unit) {
-                    val module = desktopAppModule(adapter)
-                    loadKoinModules(module)
-                    onDispose { unloadKoinModules(module) }
+    application {
+        Window(onCloseRequest = ::exitApplication, title = "Huntdex") {
+            MaterialTheme {
+                Navigator(DesktopHomeScreen()) { navigator ->
+                    val adapter = remember { DesktopNavigatorAdapter(navigator) }
+                    val module = remember(adapter) {
+                        desktopAppModule(adapter).also { loadKoinModules(it) }
+                    }
+                    DisposableEffect(module) {
+                        onDispose { unloadKoinModules(module) }
+                    }
+                    CurrentScreen()
                 }
-                CurrentScreen()
             }
         }
     }

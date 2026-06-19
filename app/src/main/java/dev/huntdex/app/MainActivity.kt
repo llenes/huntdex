@@ -20,9 +20,10 @@ class MainActivity : ComponentActivity() {
             MaterialTheme {
                 Navigator(HomeScreen()) { navigator ->
                     val adapter = remember { VoyagerNavigatorAdapter(navigator) }
-                    DisposableEffect(Unit) {
-                        val module = appModule(adapter)
-                        loadKoinModules(module)
+                    val module = remember(adapter) {
+                        appModule(adapter).also { loadKoinModules(it) }
+                    }
+                    DisposableEffect(module) {
                         onDispose { unloadKoinModules(module) }
                     }
                     navigator.lastItem.Content()
