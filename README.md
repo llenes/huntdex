@@ -147,7 +147,9 @@ huntdex/
 │           ├── navigation/
 │           │   ├── VoyagerNavigatorAdapter.kt
 │           │   └── DestinationMapper.kt
-│           └── screens/                 # Phase 0 placeholder screens
+│           └── screens/
+│               ├── MainScreen.kt        # Root: TabNavigator + floating bottom nav
+│               └── DetailScreen.kt
 │
 ├── iosApp/                       # iOS application entry point (Xcode project)
 │   ├── Podfile                          # CocoaPods: pod 'shared'
@@ -163,7 +165,8 @@ huntdex/
 │       ├── navigation/
 │       │   ├── DesktopNavigatorAdapter.kt
 │       │   └── DesktopDestinationMapper.kt
-│       └── screens/                     # Phase 0 placeholder screens
+│       └── screens/
+│           └── DesktopMainScreen.kt     # Root: collapsible NavigationRail + TabNavigator
 │
 ├── core/
 │   ├── domain/                   # Entities, use cases, repository interfaces
@@ -185,7 +188,7 @@ huntdex/
 │   ├── shared.podspec                   # CocoaPods spec — built by Gradle, consumed by Xcode
 │   └── src/
 │       ├── commonMain/           # Shared Compose UI logic
-│       └── iosMain/              # MainViewController, iOS DI module, iOS navigator adapter
+│       └── iosMain/              # MainViewController, iOS DI module, iOS navigator adapter, IosMainScreen
 │
 ├── feature/
 │   ├── pokedex/                  # Pokémon list/detail, evolutions, locations by game
@@ -279,6 +282,18 @@ CREATE TABLE pokemon_detail (
   data TEXT    NOT NULL   -- PokemonDetail serialized via kotlinx.serialization
 );
 
+-- Moves list cache (paginated)
+CREATE TABLE move_entry (
+  id   INTEGER PRIMARY KEY,
+  name TEXT    NOT NULL
+);
+
+-- Full move detail stored as JSON blob
+CREATE TABLE move_detail (
+  id   INTEGER PRIMARY KEY,
+  data TEXT    NOT NULL   -- MoveDetail serialized via kotlinx.serialization
+);
+
 -- Shiny hunting sessions
 CREATE TABLE hunt_session (
   id           TEXT    PRIMARY KEY,   -- UUID
@@ -312,7 +327,7 @@ CREATE TABLE hunt_daily_log (
 |---|---|---|
 | **Phase 0 — Infrastructure** | ✅ Complete | KMP project compiles, navigation contract established, two test screens run on Android + Desktop + iOS simulator |
 | **Phase 1 — Pokédex MVP** | ✅ Complete | Paginated Pokémon list with search + generation filter; full detail screen (stats, types, abilities, evolutions, locations by game); progressive SQLDelight cache |
-| **Phase 2 — Full Encyclopedia** | ⬜ Planned | Moves, Items, Locations, Games features fully implemented |
+| **Phase 2 — Full Encyclopedia** | 🚧 In Progress | Moves list + detail ✅ · Bottom/rail navigation ✅ · Items, Locations, Games ⬜ |
 | **Phase 3 — Shiny Hunting** | ⬜ Planned | Session management, counters, daily logs, hunter profile with global stats |
 | **Phase 4 — Auth & Sync** | ⬜ Planned | Supabase auth (email + Google/Apple), cross-device sync for hunting data |
 | **Phase 5 — Web** | ⬜ Planned | Kotlin/WASM web target, deep links |
@@ -324,7 +339,7 @@ CREATE TABLE hunt_daily_log (
 ### Near-term (Phase 2)
 
 - **`Result<T>` wrapper in `core:common`** — ScreenModels currently use `runCatching` inline. Extract a shared `Result<T>` sealed class so all features handle loading/success/error uniformly.
-- **Pagination abstraction** — `PokemonListScreenModel` implements offset-based pagination directly. Before Phase 2 adds more list screens (Moves, Items), extract a `Pager` abstraction in `:core:common` to avoid duplication.
+- **Pagination abstraction** — Both `PokemonListScreenModel` and `MoveListScreenModel` duplicate offset-based pagination logic. Extract a `Pager` abstraction in `:core:common` before adding more list screens (Items, Locations).
 - **Generation filter cache** — `getPokemonByGeneration` is network-only. Cache generation→Pokémon mappings in a `generation_pokemon` table so repeated filter changes don't re-hit the API.
 - **Search across all Pokémon** — Current search filters only loaded pages. A proper search would query `pokemon_entry` via the `searchPokemon` SQL query (already defined in schema), which searches the full local cache.
 
