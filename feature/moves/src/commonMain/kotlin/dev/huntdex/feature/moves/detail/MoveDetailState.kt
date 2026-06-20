@@ -7,10 +7,10 @@ data class MoveDetailState(
     val detail: MoveDetail? = null,
     val isLoading: Boolean = true,
     val error: String? = null,
-    val isLearnedByExpanded: Boolean = false
+    val showAllLearnedBy: Boolean = false
 ) {
     val learnedByVisible: List<LearnedByPokemon>
-        get() = if (isLearnedByExpanded) detail?.learnedBy ?: emptyList()
+        get() = if (showAllLearnedBy) detail?.learnedBy ?: emptyList()
                 else (detail?.learnedBy ?: emptyList()).take(10)
     val hasMoreLearnedBy: Boolean
         get() = (detail?.learnedBy?.size ?: 0) > 10

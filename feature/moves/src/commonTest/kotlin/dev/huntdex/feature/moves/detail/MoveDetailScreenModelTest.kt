@@ -59,7 +59,7 @@ class MoveDetailScreenModelTest {
         dispatcher.scheduler.advanceUntilIdle()
         model.onIntent(MoveDetailIntent.ExpandLearnedBy)
         assertEquals(15, model.state.value.learnedByVisible.size)
-        assertTrue(model.state.value.isLearnedByExpanded)
+        assertTrue(model.state.value.showAllLearnedBy)
     }
 
     @Test

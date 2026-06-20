@@ -27,7 +27,7 @@ class MoveDetailScreenModel(
     fun onIntent(intent: MoveDetailIntent) {
         when (intent) {
             is MoveDetailIntent.NavigateBack -> navigator.navigateBack()
-            is MoveDetailIntent.ExpandLearnedBy -> _state.update { it.copy(isLearnedByExpanded = true) }
+            is MoveDetailIntent.ExpandLearnedBy -> _state.update { it.copy(showAllLearnedBy = true) }
             is MoveDetailIntent.Retry -> loadDetail()
         }
     }
