@@ -5,6 +5,11 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+compose.resources {
+    publicResClass = true
+    generateResClass = always
+}
+
 kotlin {
     jvmToolchain(17)
     androidTarget()
@@ -17,6 +22,7 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.coroutines.core)
             implementation(compose.runtime)
+            implementation(compose.components.resources)
         }
     }
 }

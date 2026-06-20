@@ -43,6 +43,24 @@ import dev.huntdex.core.domain.model.PokemonAbility
 import dev.huntdex.core.domain.model.PokemonDetail
 import dev.huntdex.core.domain.model.PokemonStat
 import dev.huntdex.core.domain.model.PokemonType
+import huntdex.core.ui.generated.resources.Res as CoreUiRes
+import huntdex.core.ui.generated.resources.string_back
+import huntdex.core.ui.generated.resources.string_loading
+import huntdex.core.ui.generated.resources.string_retry
+import huntdex.feature.pokedex.generated.resources.Res
+import huntdex.feature.pokedex.generated.resources.ability_hidden
+import huntdex.feature.pokedex.generated.resources.section_abilities
+import huntdex.feature.pokedex.generated.resources.section_evolution
+import huntdex.feature.pokedex.generated.resources.section_locations
+import huntdex.feature.pokedex.generated.resources.section_stats
+import huntdex.feature.pokedex.generated.resources.section_types
+import huntdex.feature.pokedex.generated.resources.stat_attack
+import huntdex.feature.pokedex.generated.resources.stat_defense
+import huntdex.feature.pokedex.generated.resources.stat_hp
+import huntdex.feature.pokedex.generated.resources.stat_sp_atk
+import huntdex.feature.pokedex.generated.resources.stat_sp_def
+import huntdex.feature.pokedex.generated.resources.stat_speed
+import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
 data class PokemonDetailScreen(val pokemonId: Int) : Screen {
@@ -58,12 +76,16 @@ data class PokemonDetailScreen(val pokemonId: Int) : Screen {
                 TopAppBar(
                     title = {
                         Text(
-                            state.detail?.name?.replaceFirstChar { it.uppercase() } ?: "Loading…"
+                            state.detail?.name?.replaceFirstChar { it.uppercase() }
+                                ?: stringResource(CoreUiRes.string.string_loading)
                         )
                     },
                     navigationIcon = {
                         IconButton(onClick = { screenModel.onIntent(PokemonDetailIntent.NavigateBack) }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(CoreUiRes.string.string_back)
+                            )
                         }
                     }
                 )
@@ -82,7 +104,7 @@ data class PokemonDetailScreen(val pokemonId: Int) : Screen {
                 ) {
                     Text(state.error!!, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
                     TextButton(onClick = { screenModel.onIntent(PokemonDetailIntent.Retry) }) {
-                        Text("Retry")
+                        Text(stringResource(CoreUiRes.string.string_retry))
                     }
                 }
 
@@ -100,7 +122,6 @@ private fun PokemonDetailContent(detail: PokemonDetail, modifier: Modifier = Mod
     Column(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)
     ) {
-        // Sprite + basic info
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
             AsyncImage(
                 model = detail.spriteUrl,
@@ -131,28 +152,27 @@ private fun PokemonDetailContent(detail: PokemonDetail, modifier: Modifier = Mod
             textAlign = TextAlign.Center
         )
 
-        // Flavor text
         if (detail.flavorText.isNotBlank()) {
             Spacer(Modifier.height(12.dp))
             Text(detail.flavorText, style = MaterialTheme.typography.bodyMedium)
         }
 
-        SectionHeader("Types")
+        SectionHeader(stringResource(Res.string.section_types))
         TypesRow(detail.types)
 
-        SectionHeader("Stats")
+        SectionHeader(stringResource(Res.string.section_stats))
         StatsSection(detail.stats)
 
-        SectionHeader("Abilities")
+        SectionHeader(stringResource(Res.string.section_abilities))
         AbilitiesSection(detail.abilities)
 
         if (detail.evolutionSteps.isNotEmpty()) {
-            SectionHeader("Evolution")
+            SectionHeader(stringResource(Res.string.section_evolution))
             EvolutionSection(detail.evolutionSteps)
         }
 
         if (detail.locationEncounters.isNotEmpty()) {
-            SectionHeader("Locations")
+            SectionHeader(stringResource(Res.string.section_locations))
             LocationsSection(detail.locationEncounters)
         }
 
@@ -176,11 +196,26 @@ private fun TypesRow(types: List<PokemonType>) {
 
 @Composable
 private fun StatsSection(stats: List<PokemonStat>) {
+    val hp = stringResource(Res.string.stat_hp)
+    val attack = stringResource(Res.string.stat_attack)
+    val defense = stringResource(Res.string.stat_defense)
+    val spAtk = stringResource(Res.string.stat_sp_atk)
+    val spDef = stringResource(Res.string.stat_sp_def)
+    val speed = stringResource(Res.string.stat_speed)
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         stats.forEach { stat ->
+            val label = when (stat.name) {
+                "hp" -> hp
+                "attack" -> attack
+                "defense" -> defense
+                "special-attack" -> spAtk
+                "special-defense" -> spDef
+                "speed" -> speed
+                else -> stat.name.replaceFirstChar { it.uppercase() }
+            }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    humanizeStat(stat.name),
+                    label,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.width(100.dp)
                 )
@@ -212,7 +247,7 @@ private fun AbilitiesSection(abilities: List<PokemonAbility>) {
                 if (ability.isHidden) {
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        "(Hidden)",
+                        stringResource(Res.string.ability_hidden),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -249,14 +284,4 @@ private fun LocationsSection(encounters: List<LocationEncounter>) {
             }
         }
     }
-}
-
-private fun humanizeStat(name: String) = when (name) {
-    "hp" -> "HP"
-    "attack" -> "Attack"
-    "defense" -> "Defense"
-    "special-attack" -> "Sp. Atk"
-    "special-defense" -> "Sp. Def"
-    "speed" -> "Speed"
-    else -> name.replaceFirstChar { it.uppercase() }
 }
