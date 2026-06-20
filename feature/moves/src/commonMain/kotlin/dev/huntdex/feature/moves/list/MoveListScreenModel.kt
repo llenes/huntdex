@@ -39,7 +39,6 @@ class MoveListScreenModel(
                 _state.value.selectedDamageClass != null -> applyDamageClassFilter(_state.value.selectedDamageClass)
                 else -> loadFirstPage()
             }
-            is MoveListIntent.NavigateBack -> navigator.navigateBack()
         }
     }
 

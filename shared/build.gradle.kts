@@ -20,6 +20,7 @@ kotlin {
             baseName = "HuntdexKit"
             isStatic = true
         }
+        extraSpecAttributes["libraries"] = "'c++', 'sqlite3'"
     }
 
     sourceSets {
@@ -31,6 +32,7 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.koin)
+            implementation(libs.voyager.tab.navigator)
             implementation(libs.coroutines.core)
             implementation(projects.core.domain)
             implementation(projects.core.navigation)

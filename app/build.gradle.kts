@@ -36,6 +36,7 @@ dependencies {
 
     implementation(libs.voyager.navigator)
     implementation(libs.voyager.koin)
+    implementation(libs.voyager.tab.navigator)
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
     implementation(libs.androidx.activity.compose)

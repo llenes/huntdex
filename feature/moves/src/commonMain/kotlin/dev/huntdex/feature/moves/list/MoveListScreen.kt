@@ -6,8 +6,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,22 +27,9 @@ data object MoveListScreen : Screen {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MoveListContent(state: MoveListState, onIntent: (MoveListIntent) -> Unit) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Movimientos") },
-                navigationIcon = {
-                    IconButton(onClick = { onIntent(MoveListIntent.NavigateBack) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás")
-                    }
-                }
-            )
-        }
-    ) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding)) {
+    Column(Modifier.fillMaxSize().statusBarsPadding()) {
         OutlinedTextField(
             value = state.searchQuery,
             onValueChange = { onIntent(MoveListIntent.Search(it)) },
@@ -100,7 +85,6 @@ private fun MoveListContent(state: MoveListState, onIntent: (MoveListIntent) -> 
             else -> MoveList(state = state, onIntent = onIntent)
         }
     }
-    } // Scaffold
 }
 
 @Composable
