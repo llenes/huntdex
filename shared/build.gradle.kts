@@ -20,6 +20,7 @@ kotlin {
             baseName = "HuntdexKit"
             isStatic = true
         }
+        extraSpecAttributes["libraries"] = "'c++', 'sqlite3'"
     }
 
     sourceSets {
