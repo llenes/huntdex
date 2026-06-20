@@ -1,5 +1,6 @@
 package dev.huntdex.core.data.repository
 
+import dev.huntdex.core.common.LocaleProvider
 import dev.huntdex.core.data.db.HuntdexDatabase
 import dev.huntdex.core.data.mapper.spriteUrl
 import dev.huntdex.core.data.mapper.toPokemonDetail
@@ -16,7 +17,8 @@ import kotlinx.serialization.json.Json
 
 class PokemonRepositoryImpl(
     private val db: HuntdexDatabase,
-    private val api: PokemonApi
+    private val api: PokemonApi,
+    private val localeProvider: LocaleProvider = LocaleProvider()
 ) : PokemonRepository {
 
     private val queries get() = db.huntdexDatabaseQueries
@@ -71,7 +73,7 @@ class PokemonRepositoryImpl(
             val encounters = encountersDeferred.await()
             val chainDto = chainDeferred.await()
 
-            toPokemonDetail(detailDto, speciesDto, chainDto, encounters)
+            toPokemonDetail(detailDto, speciesDto, chainDto, encounters, localeProvider.languageCode())
         }
 
         queries.insertPokemonDetail(id.toLong(), Json.encodeToString(detail))

@@ -24,13 +24,15 @@ fun toPokemonDetail(
     detail: PokemonDetailDto,
     species: PokemonSpeciesDto,
     chain: EvolutionChainDto,
-    encounters: List<LocationEncounterDto>
+    encounters: List<LocationEncounterDto>,
+    languageCode: String
 ): PokemonDetail {
     val flavorText = species.flavorTextEntries
-        .firstOrNull { it.language.name == "en" }
+        .firstOrNull { it.language.name == languageCode }
         ?.flavorText
-        ?.replace("\n", " ")
-        ?.replace("\u000C", " ")
+        ?: species.flavorTextEntries
+            .firstOrNull { it.language.name == "en" }
+            ?.flavorText
         ?: ""
 
     return PokemonDetail(
@@ -44,7 +46,7 @@ fun toPokemonDetail(
             .map { PokemonType(it.type.name) },
         stats = detail.stats.map { PokemonStat(it.stat.name, it.baseStat) },
         abilities = detail.abilities.map { PokemonAbility(it.ability.name, it.isHidden) },
-        flavorText = flavorText,
+        flavorText = flavorText.replace("\n", " ").replace("", " "),
         generation = species.generation.name,
         evolutionSteps = flattenEvolutionChain(chain.chain),
         locationEncounters = encounters.map { enc ->
