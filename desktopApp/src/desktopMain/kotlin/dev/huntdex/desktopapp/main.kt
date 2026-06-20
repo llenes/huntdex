@@ -11,7 +11,7 @@ import dev.huntdex.core.data.di.dataModule
 import dev.huntdex.core.data.di.desktopDataModule
 import dev.huntdex.desktopapp.di.desktopAppModule
 import dev.huntdex.desktopapp.navigation.DesktopNavigatorAdapter
-import dev.huntdex.desktopapp.screens.DesktopHomeScreen
+import dev.huntdex.desktopapp.screens.DesktopMainScreen
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.startKoin
 import org.koin.core.context.unloadKoinModules
@@ -23,7 +23,7 @@ fun main() {
     application {
         Window(onCloseRequest = ::exitApplication, title = "Huntdex") {
             MaterialTheme {
-                Navigator(DesktopHomeScreen()) { navigator ->
+                Navigator(DesktopMainScreen) { navigator ->
                     val adapter = remember { DesktopNavigatorAdapter(navigator) }
                     val module = remember(adapter) {
                         desktopAppModule(adapter).also { loadKoinModules(it) }

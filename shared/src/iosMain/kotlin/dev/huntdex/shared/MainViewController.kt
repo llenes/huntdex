@@ -10,7 +10,7 @@ import dev.huntdex.core.data.di.dataModule
 import dev.huntdex.core.data.di.iosDataModule
 import dev.huntdex.shared.di.iosAppModule
 import dev.huntdex.shared.navigation.IosNavigatorAdapter
-import dev.huntdex.shared.screens.IosHomeScreen
+import dev.huntdex.shared.screens.IosMainScreen
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.startKoin
 import org.koin.core.context.unloadKoinModules
@@ -22,7 +22,7 @@ fun MainViewController(): UIViewController {
     }
     return ComposeUIViewController(configure = { enforceStrictPlistSanityCheck = false }) {
         MaterialTheme {
-            Navigator(IosHomeScreen()) { navigator ->
+            Navigator(IosMainScreen()) { navigator ->
                 val adapter = remember { IosNavigatorAdapter(navigator) }
                 val module = remember(adapter) {
                     iosAppModule(adapter).also { loadKoinModules(it) }
