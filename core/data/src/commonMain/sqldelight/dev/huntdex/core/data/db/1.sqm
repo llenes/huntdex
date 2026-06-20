@@ -1,0 +1,12 @@
+-- Migration from schema version 1 to version 2
+-- Adds Move cache tables (Phase 2 PR1)
+
+CREATE TABLE move_entry (
+  id   INTEGER PRIMARY KEY,
+  name TEXT    NOT NULL
+);
+
+CREATE TABLE move_detail (
+  id   INTEGER PRIMARY KEY,
+  data TEXT    NOT NULL
+);
