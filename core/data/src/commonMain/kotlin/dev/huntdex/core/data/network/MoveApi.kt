@@ -9,8 +9,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 
-private const val BASE_URL = "https://pokeapi.co/api/v2"
-
 class MoveApi(private val client: HttpClient) {
     suspend fun getMoveList(limit: Int, offset: Int): MoveListResponseDto =
         client.get("$BASE_URL/move?limit=$limit&offset=$offset").body()
