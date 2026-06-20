@@ -28,6 +28,10 @@ class DesktopHomeScreen : Screen {
             Button(onClick = { screenModel.navigateToPokemonList() }) {
                 Text("Abrir Pokédex")
             }
+            Spacer(Modifier.height(8.dp))
+            Button(onClick = { screenModel.navigateToMoveList() }) {
+                Text("Abrir Movimientos")
+            }
         }
     }
 }
@@ -37,5 +41,9 @@ class DesktopHomeScreenModel(
 ) : ScreenModel {
     fun navigateToPokemonList() {
         navigator.navigateTo(Destination.PokemonList)
+    }
+
+    fun navigateToMoveList() {
+        navigator.navigateTo(Destination.MoveList)
     }
 }
