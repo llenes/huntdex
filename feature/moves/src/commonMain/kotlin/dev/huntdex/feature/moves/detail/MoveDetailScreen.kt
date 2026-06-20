@@ -2,6 +2,7 @@ package dev.huntdex.feature.moves.detail
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
@@ -90,45 +91,50 @@ private fun MoveDetailLoaded(state: MoveDetailState, detail: MoveDetail, onInten
                 }
             }
 
-            // Learned by section
+            // Learned by section — header
             item {
-                Card(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(16.dp)) {
-                        Text("Learned by Pokémon", style = MaterialTheme.typography.titleMedium)
-                        Spacer(Modifier.height(8.dp))
-                        state.learnedByVisible.forEach { pokemon ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                AsyncImage(
-                                    model = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png",
-                                    contentDescription = pokemon.name,
-                                    modifier = Modifier.size(40.dp)
-                                )
-                                Spacer(Modifier.width(8.dp))
-                                Column {
-                                    Text(
-                                        pokemon.name.replaceFirstChar { it.uppercase() },
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                    Text(
-                                        pokemon.learnMethods.joinToString(", "),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-                        }
-                        if (state.hasMoreLearnedBy && !state.showAllLearnedBy) {
-                            Spacer(Modifier.height(8.dp))
-                            OutlinedButton(
-                                onClick = { onIntent(MoveDetailIntent.ExpandLearnedBy) },
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text("Ver más")
-                            }
-                        }
+                Text(
+                    "Learned by Pokémon",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+            }
+
+            // Each Pokémon as its own lazy item to avoid eagerly composing hundreds of rows
+            items(state.learnedByVisible, key = { it.id }) { pokemon ->
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    AsyncImage(
+                        model = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png",
+                        contentDescription = pokemon.name,
+                        modifier = Modifier.size(40.dp)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Column {
+                        Text(
+                            pokemon.name.replaceFirstChar { it.uppercase() },
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Text(
+                            pokemon.learnMethods.joinToString(", "),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+            }
+
+            // "Ver más" button item
+            if (state.hasMoreLearnedBy && !state.showAllLearnedBy) {
+                item {
+                    OutlinedButton(
+                        onClick = { onIntent(MoveDetailIntent.ExpandLearnedBy) },
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                    ) {
+                        Text("Ver más")
                     }
                 }
             }

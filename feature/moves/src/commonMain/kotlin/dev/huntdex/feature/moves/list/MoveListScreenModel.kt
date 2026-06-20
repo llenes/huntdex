@@ -82,7 +82,7 @@ class MoveListScreenModel(
     }
 
     private fun applyTypeFilter(typeName: String?) {
-        _state.update { it.copy(selectedType = typeName, selectedDamageClass = null, isLoading = true, moves = emptyList()) }
+        _state.update { it.copy(selectedType = typeName, selectedDamageClass = null, isLoading = true, error = null, moves = emptyList()) }
         if (typeName == null) { loadFirstPage(); return }
         scope.launch {
             runCatching { repository.getMovesByType(typeName) }
@@ -92,7 +92,7 @@ class MoveListScreenModel(
     }
 
     private fun applyDamageClassFilter(className: String?) {
-        _state.update { it.copy(selectedDamageClass = className, selectedType = null, isLoading = true, moves = emptyList()) }
+        _state.update { it.copy(selectedDamageClass = className, selectedType = null, isLoading = true, error = null, moves = emptyList()) }
         if (className == null) { loadFirstPage(); return }
         scope.launch {
             runCatching { repository.getMovesByDamageClass(className) }
