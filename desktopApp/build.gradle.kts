@@ -21,6 +21,7 @@ kotlin {
                 implementation(libs.koin.core)
                 implementation(libs.voyager.navigator)
                 implementation(libs.voyager.koin)
+                implementation(libs.voyager.tab.navigator)
                 implementation(libs.coroutines.core)
                 implementation(libs.coroutines.swing)
             }
