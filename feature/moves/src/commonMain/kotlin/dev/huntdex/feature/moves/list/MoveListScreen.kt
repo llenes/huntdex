@@ -27,9 +27,13 @@ data object MoveListScreen : Screen {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MoveListContent(state: MoveListState, onIntent: (MoveListIntent) -> Unit) {
-    Column(Modifier.fillMaxSize()) {
+    Scaffold(
+        topBar = { TopAppBar(title = { Text("Movimientos") }) }
+    ) { padding ->
+        Column(Modifier.fillMaxSize().padding(padding)) {
         OutlinedTextField(
             value = state.searchQuery,
             onValueChange = { onIntent(MoveListIntent.Search(it)) },
@@ -85,6 +89,7 @@ private fun MoveListContent(state: MoveListState, onIntent: (MoveListIntent) -> 
             else -> MoveList(state = state, onIntent = onIntent)
         }
     }
+    } // Scaffold
 }
 
 @Composable
