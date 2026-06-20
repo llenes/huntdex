@@ -29,7 +29,7 @@ data object MoveListScreen : Screen {
 
 @Composable
 private fun MoveListContent(state: MoveListState, onIntent: (MoveListIntent) -> Unit) {
-    Column(Modifier.fillMaxSize()) {
+    Column(Modifier.fillMaxSize().statusBarsPadding()) {
         OutlinedTextField(
             value = state.searchQuery,
             onValueChange = { onIntent(MoveListIntent.Search(it)) },
