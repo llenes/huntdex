@@ -1,5 +1,6 @@
 package dev.huntdex.core.data.repository
 
+import dev.huntdex.core.common.LocaleProvider
 import dev.huntdex.core.data.db.HuntdexDatabase
 import dev.huntdex.core.data.mapper.toMoveDetail
 import dev.huntdex.core.data.network.MoveApi
@@ -15,6 +16,7 @@ import kotlinx.serialization.json.Json
 class MoveRepositoryImpl(
     private val db: HuntdexDatabase,
     private val api: MoveApi,
+    private val localeProvider: LocaleProvider
 ) : MoveRepository {
 
     private val queries get() = db.huntdexDatabaseQueries
@@ -47,15 +49,12 @@ class MoveRepositoryImpl(
     }
 
     override suspend fun getMoveDetail(id: Int): MoveDetail {
-        val cachedJson = queries.selectMoveDetail(id.toLong()).executeAsOneOrNull()
-        if (cachedJson != null) return Json.decodeFromString(cachedJson)
-
         val detail = coroutineScope {
             val moveDto = api.getMoveDetail(id)
             val contestEffectDeferred = moveDto.contestEffect?.url?.extractPokeApiId()
                 ?.let { async { api.getContestEffect(it) } }
             val contestEffectDto = contestEffectDeferred?.await()
-            toMoveDetail(moveDto, contestEffectDto, "en")
+            toMoveDetail(moveDto, contestEffectDto, localeProvider.languageCode())
         }
 
         queries.insertMoveDetail(id.toLong(), Json.encodeToString(detail))
