@@ -1,51 +1,51 @@
 # Strings PR — Design Spec
 
-**Date:** 2026-06-20  
-**Branch:** `phase-2/strings`  
-**Scope:** Extraer strings hardcodeados de las pantallas existentes y definir el mecanismo para servir texto dinámico de PokéAPI en el idioma del usuario.
+**Date:** 2026-06-20
+**Branch:** `phase-2/strings`
+**Scope:** Extract all hardcoded UI strings from existing screens to localized string resources, and define the mechanism for serving dynamic PokéAPI content in the user's language.
 
 ---
 
-## Objetivos
+## Goals
 
-1. Extraer todos los strings de UI estáticos hardcodeados a recursos de string localizados (`composeResources`).
-2. Proveer un `LocaleProvider` que lea el locale del sistema y lo exponga a la capa de datos.
-3. Usar ese locale para filtrar flavor text y effect text de PokéAPI en lugar del `"en"` hardcodeado actual.
+1. Extract all static UI strings to `composeResources` XML files with English and Spanish translations.
+2. Introduce a `LocaleProvider` that reads the system locale and exposes it to the data layer.
+3. Use that locale to filter flavor text and effect text from PokéAPI instead of the current hardcoded `"en"`.
 
-## Fuera de scope
+## Out of Scope
 
-- Nombres localizados de Pokémon (requieren `PokemonSpeciesDto.names` y cambios en lista+detalle simultáneamente).
-- Nombres de tipo ("fire", "water"…) y damage class ("physical"…): son slugs de API usados como identificadores de filtro; se localizarán en un PR de tipos.
-- ContentDescriptions de `DesktopMainScreen` ("Collapse/Expand navigation"): requieren activar Compose en `desktopApp`; quedan para un PR de accesibilidad.
-
----
-
-## Idiomas soportados
-
-- **`values/`** — inglés (base / fallback)
-- **`values-es/`** — español
-
-La arquitectura queda lista para añadir cualquier idioma soportado por PokéAPI agregando un directorio `values-xx/`.
+- Localized Pokémon names: requires adding `PokemonSpeciesDto.names` and changing list + detail simultaneously; deferred to a dedicated localization PR.
+- Type names ("fire", "water"…) and damage class names ("physical"…): these are API slugs used as filter identifiers; will be localized in a types PR.
+- `DesktopMainScreen` contentDescriptions ("Collapse/Expand navigation"): require enabling Compose in `desktopApp`; deferred to an accessibility PR.
 
 ---
 
-## Arquitectura
+## Supported Languages
 
-### 1. Strings estáticos — `composeResources`
+- **`values/`** — English (base / fallback)
+- **`values-es/`** — Spanish
 
-Compose Multiplatform genera `Res.string.xxx` desde archivos `strings.xml`. El sistema elige el directorio (`values/` o `values-es/`) según el locale del dispositivo en tiempo de composición, sin código adicional en las pantallas.
+The architecture is ready for any additional PokéAPI-supported language by adding a `values-xx/` directory.
 
-**Distribución por módulo (Opción B — modular):**
+---
 
-| Módulo | Contenido |
+## Architecture
+
+### 1. Static strings — `composeResources`
+
+Compose Multiplatform generates `Res.string.xxx` from `strings.xml` files. The resource system automatically picks the correct directory (`values/` or `values-es/`) based on the device locale at composition time — no extra code needed in the screens.
+
+**Module distribution (Option B — modular):**
+
+| Module | Contents |
 |---|---|
-| `core/ui` | Strings compartidos entre features: Retry, Back, Loading |
-| `feature/pokedex` | Strings específicos de Pokédex |
-| `feature/moves` | Strings específicos de Moves |
+| `core/ui` | Strings shared across features: Retry, Back, Loading |
+| `feature/pokedex` | Pokédex-specific strings |
+| `feature/moves` | Moves-specific strings |
 
-`core/ui` necesita que se le activen los plugins `compose.multiplatform` y `kotlin.compose` en su `build.gradle.kts` (actualmente solo tiene `kotlin.multiplatform`).
+`core/ui` requires the `compose.multiplatform` and `kotlin.compose` plugins to be added to its `build.gradle.kts` (currently only has `kotlin.multiplatform`).
 
-### 2. Texto dinámico — `LocaleProvider`
+### 2. Dynamic text — `LocaleProvider`
 
 ```
 core/common
@@ -55,16 +55,16 @@ core/common
 └── iosMain     →  actual: NSLocale.preferredLanguages.firstOrNull()?.substringBefore('-') ?: "en"
 ```
 
-`LocaleProvider()` no recibe parámetros en ninguna plataforma.
+`LocaleProvider()` takes no constructor parameters on any platform.
 
-`DataModule.kt` (commonMain) registra:
+`DataModule.kt` (commonMain) registers:
 ```kotlin
 single { LocaleProvider() }
 ```
 
-`PokemonRepositoryImpl` y `MoveRepositoryImpl` inyectan `LocaleProvider` por constructor y pasan `localeProvider.languageCode()` a sus mappers en cada llamada (sin cachear, para reflejar cambios de idioma en el próximo fetch).
+`PokemonRepositoryImpl` and `MoveRepositoryImpl` inject `LocaleProvider` via constructor and pass `localeProvider.languageCode()` to their mappers on each call. The language code is read on every fetch (not cached), so a system language change is reflected on the next data load.
 
-### 3. Patrón de fallback en mappers
+### 3. Fallback pattern in mappers
 
 ```kotlin
 entries.firstOrNull { it.language.name == languageCode }
@@ -72,15 +72,15 @@ entries.firstOrNull { it.language.name == languageCode }
     ?: ""
 ```
 
-Aplica a:
-- `PokemonMapper.toPokemonDetail()` — `flavorTextEntries` (1 ocurrencia)
-- `MoveMapper.toMoveDetail()` — `effectEntries`, `flavorTextEntries`, `contestEffect.effectEntries` (3 ocurrencias)
+Applied to:
+- `PokemonMapper.toPokemonDetail()` — `flavorTextEntries` (1 occurrence)
+- `MoveMapper.toMoveDetail()` — `effectEntries`, `flavorTextEntries`, `contestEffect.effectEntries` (3 occurrences)
 
 ---
 
-## Inventario de strings
+## String Inventory
 
-### `core/ui` — compartidos
+### `core/ui` — shared
 
 | Key | EN | ES |
 |---|---|---|
@@ -130,9 +130,9 @@ Aplica a:
 
 ---
 
-## Archivos afectados
+## Files Affected
 
-### Nuevos (6)
+### New (10)
 
 ```
 core/common/src/commonMain/kotlin/dev/huntdex/core/common/LocaleProvider.kt
@@ -147,9 +147,7 @@ feature/moves/src/commonMain/composeResources/values/strings.xml
 feature/moves/src/commonMain/composeResources/values-es/strings.xml
 ```
 
-*(10 archivos nuevos — los 4 de LocaleProvider cuentan como un conjunto lógico)*
-
-### Modificados (12)
+### Modified (12)
 
 ```
 core/ui/build.gradle.kts
@@ -166,12 +164,12 @@ feature/moves/src/commonMain/kotlin/dev/huntdex/feature/moves/list/MovesTab.kt
 feature/moves/src/commonMain/kotlin/dev/huntdex/feature/moves/detail/MoveDetailScreen.kt
 ```
 
-**Total: 22 archivos** — dentro del target de 20–25.
+**Total: 22 files** — within the 20–25 file target.
 
 ---
 
-## Notas de implementación
+## Implementation Notes
 
-- `Res.string.xxx` de `core/ui` se referencia desde otros módulos con el prefijo de paquete generado: `dev.huntdex.core.ui.generated.resources.Res`. El import es verboso pero correcto; Compose genera el alias automáticamente si se usa el plugin `compose.multiplatform`.
-- `generation_label` usa `stringResource(Res.string.generation_label, romanNumeral)` con argumento de formato `%s`.
-- Los tabs de Voyager (`PokedexTab`, `MovesTab`) declaran `options` con `@Composable get()`, por lo que `stringResource(Res.string.xxx)` se puede usar directamente dentro del getter sin ningún workaround.
+- `Res.string.xxx` from `core/ui` is referenced from other modules using the generated package prefix: `dev.huntdex.core.ui.generated.resources.Res`. This is verbose but correct; Compose generates the alias automatically when the `compose.multiplatform` plugin is applied to the consuming module.
+- `generation_label` uses a format argument: `stringResource(Res.string.generation_label, romanNumeral)` with `%s` in the XML.
+- Both `PokedexTab` and `MovesTab` declare `options` with `@Composable get()`, so `stringResource(Res.string.xxx)` can be called directly inside the getter without any workaround.
