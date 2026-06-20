@@ -8,7 +8,6 @@ import dev.huntdex.core.data.network.dto.EvolutionChainDto
 import dev.huntdex.core.data.network.dto.FlavorTextEntryDto
 import dev.huntdex.core.data.network.dto.MoveDetailDto
 import dev.huntdex.core.data.network.dto.MoveEffectEntryDto
-import dev.huntdex.core.data.network.dto.MoveFlavorTextEntryDto
 import dev.huntdex.core.data.network.dto.NamedApiResourceDto
 import dev.huntdex.core.data.network.dto.PokemonAbilitySlotDto
 import dev.huntdex.core.data.network.dto.PokemonDetailDto
@@ -71,22 +70,6 @@ class MapperLanguageTest {
     }
 
     // ── MoveMapper ─────────────────────────────────────────────────────────
-
-    private fun moveDto(
-        effectLang: String, effectText: String,
-        flavorLang: String, flavorText: String
-    ) = MoveDetailDto(
-        id = 1, name = "tackle", accuracy = 100, power = 40, pp = 35, priority = 0,
-        type = NamedApiResourceDto("normal", ""),
-        damageClass = NamedApiResourceDto("physical", ""),
-        effectEntries = listOf(MoveEffectEntryDto(effectText, NamedApiResourceDto(effectLang, ""))),
-        flavorTextEntries = listOf(
-            MoveFlavorTextEntryDto(flavorText, NamedApiResourceDto(flavorLang, ""), NamedApiResourceDto("vg", ""))
-        ),
-        learnedByPokemon = emptyList(),
-        contestType = null,
-        contestEffect = null
-    )
 
     @Test
     fun `toMoveDetail uses requested language for effectEntry`() {
