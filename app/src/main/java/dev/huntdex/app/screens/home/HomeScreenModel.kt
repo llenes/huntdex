@@ -11,6 +11,7 @@ data class HomeState(val count: Int = 0)
 
 sealed interface HomeIntent {
     data object NavigateToPokemonList : HomeIntent
+    data object NavigateToMoveList : HomeIntent
 }
 
 class HomeScreenModel(private val navigator: AppNavigator) : ScreenModel {
@@ -20,6 +21,7 @@ class HomeScreenModel(private val navigator: AppNavigator) : ScreenModel {
     fun onIntent(intent: HomeIntent) {
         when (intent) {
             is HomeIntent.NavigateToPokemonList -> navigator.navigateTo(Destination.PokemonList)
+            is HomeIntent.NavigateToMoveList -> navigator.navigateTo(Destination.MoveList)
         }
     }
 }

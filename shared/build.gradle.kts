@@ -36,6 +36,7 @@ kotlin {
             implementation(projects.core.navigation)
             implementation(projects.core.data)
             implementation(projects.feature.pokedex)
+            implementation(projects.feature.moves)
         }
     }
 }

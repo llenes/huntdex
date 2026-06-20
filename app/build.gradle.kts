@@ -32,6 +32,7 @@ dependencies {
     implementation(projects.core.ui)
     implementation(projects.core.common)
     implementation(projects.feature.pokedex)
+    implementation(projects.feature.moves)
 
     implementation(libs.voyager.navigator)
     implementation(libs.voyager.koin)

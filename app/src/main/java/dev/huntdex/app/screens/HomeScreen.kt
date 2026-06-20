@@ -33,6 +33,10 @@ class HomeScreen : Screen, java.io.Serializable {
             Button(onClick = { screenModel.onIntent(HomeIntent.NavigateToPokemonList) }) {
                 Text("Abrir Pokédex")
             }
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = { screenModel.onIntent(HomeIntent.NavigateToMoveList) }) {
+                Text("Abrir Movimientos")
+            }
         }
     }
 }

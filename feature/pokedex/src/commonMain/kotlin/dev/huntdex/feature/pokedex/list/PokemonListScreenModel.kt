@@ -40,6 +40,7 @@ class PokemonListScreenModel(
                 if (gen != null) applyGenerationFilter(gen)
                 else loadFirstPage()
             }
+            is PokemonListIntent.NavigateBack -> navigator.navigateBack()
         }
     }
 

@@ -63,3 +63,34 @@ CREATE TABLE hunt_session (
   started_at   INTEGER NOT NULL,
   completed_at INTEGER
 );
+
+-- ============================================================
+-- Move List Cache
+-- ============================================================
+CREATE TABLE move_entry (
+  id   INTEGER PRIMARY KEY,
+  name TEXT    NOT NULL
+);
+
+insertMoveEntry:
+INSERT OR IGNORE INTO move_entry (id, name) VALUES (?, ?);
+
+selectMovePage:
+SELECT id, name FROM move_entry ORDER BY id LIMIT :limit OFFSET :offset;
+
+searchMoves:
+SELECT id, name FROM move_entry WHERE name LIKE '%' || :query || '%' ORDER BY id;
+
+-- ============================================================
+-- Move Detail Cache (full object serialized as JSON)
+-- ============================================================
+CREATE TABLE move_detail (
+  id   INTEGER PRIMARY KEY,
+  data TEXT    NOT NULL
+);
+
+insertMoveDetail:
+INSERT OR REPLACE INTO move_detail (id, data) VALUES (?, ?);
+
+selectMoveDetail:
+SELECT data FROM move_detail WHERE id = ?;

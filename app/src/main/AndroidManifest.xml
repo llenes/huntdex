@@ -3,7 +3,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:name=".HuntdexApplication"
-        android:label="Huntdex">
+        android:label="Huntdex"
+        android:theme="@style/Theme.Huntdex">
         <activity
             android:name=".MainActivity"
             android:exported="true">

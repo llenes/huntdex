@@ -10,8 +10,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 
-private const val BASE_URL = "https://pokeapi.co/api/v2"
-
 class PokemonApi(private val client: HttpClient) {
 
     suspend fun getPokemonList(limit: Int, offset: Int): PokemonListResponseDto =
