@@ -8,4 +8,5 @@ sealed interface MoveListIntent {
     data class FilterByGeneration(val generationId: Int?) : MoveListIntent
     data class SelectMove(val id: Int) : MoveListIntent
     data object Retry : MoveListIntent
+    data object NavigateBack : MoveListIntent
 }
