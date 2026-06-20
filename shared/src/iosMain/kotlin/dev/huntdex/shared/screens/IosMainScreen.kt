@@ -29,7 +29,8 @@ class IosMainScreen : Screen {
     override fun Content() {
         TabNavigator(tab = PokedexTab) {
             Scaffold(
-                bottomBar = { IosFloatingBottomNavBar() }
+                bottomBar = { IosFloatingBottomNavBar() },
+                contentWindowInsets = WindowInsets(0, 0, 0, 0)
             ) { padding ->
                 Box(
                     modifier = Modifier
