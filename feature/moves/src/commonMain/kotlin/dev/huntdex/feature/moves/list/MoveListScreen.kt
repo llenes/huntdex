@@ -17,6 +17,11 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import dev.huntdex.core.domain.model.MoveEntry
+import huntdex.core.ui.generated.resources.Res as CoreUiRes
+import huntdex.core.ui.generated.resources.string_retry
+import huntdex.feature.moves.generated.resources.Res
+import huntdex.feature.moves.generated.resources.search_placeholder
+import org.jetbrains.compose.resources.stringResource
 
 data object MoveListScreen : Screen {
     @Composable
@@ -33,7 +38,7 @@ private fun MoveListContent(state: MoveListState, onIntent: (MoveListIntent) -> 
         OutlinedTextField(
             value = state.searchQuery,
             onValueChange = { onIntent(MoveListIntent.Search(it)) },
-            label = { Text("Search moves") },
+            placeholder = { Text(stringResource(Res.string.search_placeholder)) },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
         )
 
@@ -79,7 +84,9 @@ private fun MoveListContent(state: MoveListState, onIntent: (MoveListIntent) -> 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(state.error!!)
                     Spacer(Modifier.height(8.dp))
-                    Button(onClick = { onIntent(MoveListIntent.Retry) }) { Text("Retry") }
+                    Button(onClick = { onIntent(MoveListIntent.Retry) }) {
+                        Text(stringResource(CoreUiRes.string.string_retry))
+                    }
                 }
             }
             else -> MoveList(state = state, onIntent = onIntent)
