@@ -123,11 +123,15 @@ interface AppNavigator {
 
 ### Data Layer
 
-**Cache strategy:** Network → Cache → UI (offline-first, progressive)
+**Cache strategy:** Network → Cache → UI (offline-first; progressive for list data)
 
-1. Always query SQLDelight first
-2. If no data exists, fetch from PokéAPI and persist the result
-3. Subsequent reads are served from local DB
+List screens (Pokémon list, Moves list) follow the cache-first path:
+1. Query SQLDelight first; serve cached rows immediately if present
+2. If no rows, fetch from PokéAPI, persist, then serve
+
+Detail screens always fetch from PokéAPI:
+- Detail data contains user-language-specific text (flavor text, move descriptions) via `LocaleProvider`; caching would serve the wrong language after an OS locale change
+- `pokemon_detail` and `move_detail` tables still exist for a future locale-keyed cache
 
 Complex entities (Pokémon has 20+ nested fields) are stored as JSON blobs in a `TEXT` column. Fields used for search/filter (name, type, generation) are indexed as separate columns.
 
@@ -181,8 +185,8 @@ huntdex/
 │   │       ├── androidMain/      # Android SQLite driver + Koin module
 │   │       └── desktopMain/      # JDBC SQLite driver + Koin module
 │   ├── navigation/               # Destination + AppNavigator (pure KMP, no Voyager)
-│   ├── ui/                       # Design system: colors, typography, shared components
-│   └── common/                   # Extensions, Result wrapper, coroutine utils
+│   ├── ui/                       # Design system: colors, typography, shared components, shared EN+ES string resources
+│   └── common/                   # Extensions, Result wrapper, coroutine utils, LocaleProvider (OS language code, KMP expect/actual)
 │
 ├── shared/                       # iOS shared framework (Compose Multiplatform for iOS)
 │   ├── shared.podspec                   # CocoaPods spec — built by Gradle, consumed by Xcode
@@ -327,7 +331,7 @@ CREATE TABLE hunt_daily_log (
 |---|---|---|
 | **Phase 0 — Infrastructure** | ✅ Complete | KMP project compiles, navigation contract established, two test screens run on Android + Desktop + iOS simulator |
 | **Phase 1 — Pokédex MVP** | ✅ Complete | Paginated Pokémon list with search + generation filter; full detail screen (stats, types, abilities, evolutions, locations by game); progressive SQLDelight cache |
-| **Phase 2 — Full Encyclopedia** | 🚧 In Progress | Moves list + detail ✅ · Bottom/rail navigation ✅ · Items, Locations, Games ⬜ |
+| **Phase 2 — Full Encyclopedia** | 🚧 In Progress | Moves list + detail ✅ · Bottom/rail navigation ✅ · Localized strings EN+ES ✅ · Items, Locations, Games ⬜ |
 | **Phase 3 — Shiny Hunting** | ⬜ Planned | Session management, counters, daily logs, hunter profile with global stats |
 | **Phase 4 — Auth & Sync** | ⬜ Planned | Supabase auth (email + Google/Apple), cross-device sync for hunting data |
 | **Phase 5 — Web** | ⬜ Planned | Kotlin/WASM web target, deep links |
@@ -353,7 +357,7 @@ CREATE TABLE hunt_daily_log (
 
 ### Testing
 
-- **Repository and mapper unit tests** — `PokemonRepositoryImpl` and `PokemonMapper` have no tests yet. Highest-value additions: cache-hit/miss paths using an in-memory SQLite driver, `flattenEvolutionChain` with branching evolutions (e.g., Eevee), and `extractPokeApiId` edge cases.
+- **Repository integration tests** — `PokemonRepositoryImpl` and `MoveRepositoryImpl` have no integration tests. Highest-value additions: cache-hit/miss paths for list screens using an in-memory SQLite driver, and `flattenEvolutionChain` with branching evolutions (e.g., Eevee). Mapper language-selection logic is already covered by 8 tests in `MapperLanguageTest`.
 - **Error path coverage** — ScreenModel tests cover only the happy path. Add tests for `onFailure` branches and `Retry` intent to verify error → loading → success transitions.
 
 ### CI/CD
@@ -408,6 +412,8 @@ Then select an iPhone simulator in Xcode and press **⌘R** to build and run.
 
 ```bash
 ./gradlew :core:domain:desktopTest         # Domain model unit tests (3 tests)
+./gradlew :core:common:desktopTest         # LocaleProvider unit tests (2 tests)
+./gradlew :core:data:desktopTest           # Mapper language + fallback unit tests (8 tests)
 ./gradlew :feature:pokedex:desktopTest     # Pokédex ScreenModel unit tests (8 tests)
 ./gradlew :core:domain:testDebugUnitTest   # Android unit tests
 ./gradlew build                            # Full build + all tests
