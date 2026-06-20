@@ -41,11 +41,6 @@ Pod::Spec.new do |spec|
                   echo "Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \"YES\""
                   exit 0
                 fi
-                if [ -z "$JAVA_HOME" ] || [ ! -d "$JAVA_HOME" ]; then
-                  if [ -d "$HOME/.sdkman/candidates/java/current" ]; then
-                    export JAVA_HOME="$HOME/.sdkman/candidates/java/current"
-                  fi
-                fi
                 set -ev
                 REPO_ROOT="$PODS_TARGET_SRCROOT"
                 "$REPO_ROOT/../gradlew" -p "$REPO_ROOT" $KOTLIN_PROJECT_PATH:syncFramework \

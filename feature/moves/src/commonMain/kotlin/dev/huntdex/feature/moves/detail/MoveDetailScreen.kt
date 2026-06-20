@@ -91,6 +91,11 @@ private fun MoveDetailLoaded(state: MoveDetailState, detail: MoveDetail, onInten
                 }
             }
 
+            // Contest section (only shown if move has contest data)
+            detail.contestEffect?.let { contestEffect ->
+                item { ContestSection(contestEffect = contestEffect) }
+            }
+
             // Learned by section — header
             item {
                 Text(
@@ -137,11 +142,6 @@ private fun MoveDetailLoaded(state: MoveDetailState, detail: MoveDetail, onInten
                         Text("Ver más")
                     }
                 }
-            }
-
-            // Contest section (only shown if move has contest data)
-            detail.contestEffect?.let { contestEffect ->
-                item { ContestSection(contestEffect = contestEffect) }
             }
         }
     }
