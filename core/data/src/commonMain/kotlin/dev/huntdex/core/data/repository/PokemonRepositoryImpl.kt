@@ -12,8 +12,6 @@ import dev.huntdex.core.domain.model.PokemonEntry
 import dev.huntdex.core.domain.repository.PokemonRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 class PokemonRepositoryImpl(
     private val db: HuntdexDatabase,
@@ -71,7 +69,6 @@ class PokemonRepositoryImpl(
             toPokemonDetail(detailDto, speciesDto, chainDto, encounters, localeProvider.languageCode())
         }
 
-        queries.insertPokemonDetail(id.toLong(), Json.encodeToString(detail))
         return detail
     }
 }

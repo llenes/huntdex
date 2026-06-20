@@ -10,8 +10,6 @@ import dev.huntdex.core.domain.model.MoveEntry
 import dev.huntdex.core.domain.repository.MoveRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 class MoveRepositoryImpl(
     private val db: HuntdexDatabase,
@@ -57,7 +55,6 @@ class MoveRepositoryImpl(
             toMoveDetail(moveDto, contestEffectDto, localeProvider.languageCode())
         }
 
-        queries.insertMoveDetail(id.toLong(), Json.encodeToString(detail))
         return detail
     }
 }

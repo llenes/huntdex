@@ -8,12 +8,10 @@ import dev.huntdex.core.data.network.dto.EvolutionChainDto
 import dev.huntdex.core.data.network.dto.FlavorTextEntryDto
 import dev.huntdex.core.data.network.dto.MoveDetailDto
 import dev.huntdex.core.data.network.dto.MoveEffectEntryDto
+import dev.huntdex.core.data.network.dto.MoveFlavorTextEntryDto
 import dev.huntdex.core.data.network.dto.NamedApiResourceDto
-import dev.huntdex.core.data.network.dto.PokemonAbilitySlotDto
 import dev.huntdex.core.data.network.dto.PokemonDetailDto
 import dev.huntdex.core.data.network.dto.PokemonSpeciesDto
-import dev.huntdex.core.data.network.dto.PokemonStatSlotDto
-import dev.huntdex.core.data.network.dto.PokemonTypeSlotDto
 import dev.huntdex.core.data.network.dto.SpritesDto
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -127,5 +125,42 @@ class MapperLanguageTest {
         )
         val result = toMoveDetail(dto, contest, "es")
         assertEquals("Efecto concurso ES.", result.contestEffect?.effectEntry)
+    }
+
+    @Test
+    fun `toMoveDetail uses requested language for flavorText`() {
+        val dto = MoveDetailDto(
+            id = 1, name = "tackle", accuracy = 100, power = 40, pp = 35, priority = 0,
+            type = NamedApiResourceDto("normal", ""),
+            damageClass = NamedApiResourceDto("physical", ""),
+            effectEntries = emptyList(),
+            flavorTextEntries = listOf(
+                MoveFlavorTextEntryDto("Texto sabor ES.", NamedApiResourceDto("es", ""), NamedApiResourceDto("vg", "")),
+                MoveFlavorTextEntryDto("English flavor.", NamedApiResourceDto("en", ""), NamedApiResourceDto("vg", ""))
+            ),
+            learnedByPokemon = emptyList(),
+            contestType = null,
+            contestEffect = null
+        )
+        val result = toMoveDetail(dto, null, "es")
+        assertEquals("Texto sabor ES.", result.flavorText)
+    }
+
+    @Test
+    fun `toMoveDetail falls back to en for flavorText`() {
+        val dto = MoveDetailDto(
+            id = 1, name = "tackle", accuracy = 100, power = 40, pp = 35, priority = 0,
+            type = NamedApiResourceDto("normal", ""),
+            damageClass = NamedApiResourceDto("physical", ""),
+            effectEntries = emptyList(),
+            flavorTextEntries = listOf(
+                MoveFlavorTextEntryDto("English flavor.", NamedApiResourceDto("en", ""), NamedApiResourceDto("vg", ""))
+            ),
+            learnedByPokemon = emptyList(),
+            contestType = null,
+            contestEffect = null
+        )
+        val result = toMoveDetail(dto, null, "es")
+        assertEquals("English flavor.", result.flavorText)
     }
 }

@@ -49,7 +49,7 @@ fun toMoveDetail(dto: MoveDetailDto, contestEffectDto: ContestEffectDto?, langua
         pp = dto.pp,
         priority = dto.priority,
         effectEntry = effectEntry,
-        flavorText = flavorText.replace("\n", " ").replace("", " "),
+        flavorText = flavorText.replace("\n", " ").replace("", " "),
         learnedBy = learnedBy,
         contestEffect = contestEffect
     )
