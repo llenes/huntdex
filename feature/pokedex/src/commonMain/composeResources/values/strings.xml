@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pokedex_tab_title">Pokédex</string>
+    <string name="search_placeholder">Search Pokémon…</string>
+    <string name="filter_all">All</string>
+    <string name="generation_label">Gen %s</string>
+    <string name="section_types">Types</string>
+    <string name="section_stats">Stats</string>
+    <string name="section_abilities">Abilities</string>
+    <string name="section_evolution">Evolution</string>
+    <string name="section_locations">Locations</string>
+    <string name="ability_hidden">(Hidden)</string>
+    <string name="stat_hp">HP</string>
+    <string name="stat_attack">Attack</string>
+    <string name="stat_defense">Defense</string>
+    <string name="stat_sp_atk">Sp. Atk</string>
+    <string name="stat_sp_def">Sp. Def</string>
+    <string name="stat_speed">Speed</string>
+</resources>

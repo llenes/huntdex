@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="moves_tab_title">Movimientos</string>
+    <string name="search_placeholder">Buscar movimientos…</string>
+    <string name="section_stats">Estadísticas</string>
+    <string name="stat_type">Tipo</string>
+    <string name="stat_category">Categoría</string>
+    <string name="stat_power">Potencia</string>
+    <string name="stat_accuracy">Precisión</string>
+    <string name="stat_pp">PP</string>
+    <string name="stat_priority">Prioridad</string>
+    <string name="section_learned_by">Aprendido por Pokémon</string>
+    <string name="move_see_more">Ver más</string>
+    <string name="section_contest">Concurso</string>
+    <string name="contest_appeal">Atractivo</string>
+    <string name="contest_jam">Bloqueo</string>
+</resources>

@@ -36,12 +36,13 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import coil3.compose.AsyncImage
-
-private val GENERATIONS = listOf(
-    null to "All",
-    1 to "Gen I", 2 to "Gen II", 3 to "Gen III", 4 to "Gen IV",
-    5 to "Gen V", 6 to "Gen VI", 7 to "Gen VII", 8 to "Gen VIII", 9 to "Gen IX"
-)
+import huntdex.core.ui.generated.resources.Res as CoreUiRes
+import huntdex.core.ui.generated.resources.string_retry
+import huntdex.feature.pokedex.generated.resources.Res
+import huntdex.feature.pokedex.generated.resources.filter_all
+import huntdex.feature.pokedex.generated.resources.generation_label
+import huntdex.feature.pokedex.generated.resources.search_placeholder
+import org.jetbrains.compose.resources.stringResource
 
 data object PokemonListScreen : Screen {
 
@@ -50,44 +51,57 @@ data object PokemonListScreen : Screen {
         val screenModel = koinScreenModel<PokemonListScreenModel>()
         val state by screenModel.state.collectAsState()
 
-        Column(modifier = Modifier.fillMaxSize().statusBarsPadding()) {
-                OutlinedTextField(
-                    value = state.searchQuery,
-                    onValueChange = { screenModel.onIntent(PokemonListIntent.Search(it)) },
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                    placeholder = { Text("Search Pokémon…") },
-                    singleLine = true
-                )
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(GENERATIONS) { (id, label) ->
-                        FilterChip(
-                            selected = state.selectedGeneration == id,
-                            onClick = { screenModel.onIntent(PokemonListIntent.FilterByGeneration(id)) },
-                            label = { Text(label) }
-                        )
-                    }
-                }
-                Spacer(Modifier.height(8.dp))
+        val generations = listOf(
+            null to stringResource(Res.string.filter_all),
+            1 to stringResource(Res.string.generation_label, "I"),
+            2 to stringResource(Res.string.generation_label, "II"),
+            3 to stringResource(Res.string.generation_label, "III"),
+            4 to stringResource(Res.string.generation_label, "IV"),
+            5 to stringResource(Res.string.generation_label, "V"),
+            6 to stringResource(Res.string.generation_label, "VI"),
+            7 to stringResource(Res.string.generation_label, "VII"),
+            8 to stringResource(Res.string.generation_label, "VIII"),
+            9 to stringResource(Res.string.generation_label, "IX")
+        )
 
-                when {
-                    state.isLoading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                    state.error != null -> Column(
-                        Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(state.error!!, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
-                        TextButton(onClick = { screenModel.onIntent(PokemonListIntent.Retry) }) {
-                            Text("Retry")
-                        }
-                    }
-                    else -> PokemonGrid(state, screenModel)
+        Column(modifier = Modifier.fillMaxSize().statusBarsPadding()) {
+            OutlinedTextField(
+                value = state.searchQuery,
+                onValueChange = { screenModel.onIntent(PokemonListIntent.Search(it)) },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                placeholder = { Text(stringResource(Res.string.search_placeholder)) },
+                singleLine = true
+            )
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(generations) { (id, label) ->
+                    FilterChip(
+                        selected = state.selectedGeneration == id,
+                        onClick = { screenModel.onIntent(PokemonListIntent.FilterByGeneration(id)) },
+                        label = { Text(label) }
+                    )
                 }
+            }
+            Spacer(Modifier.height(8.dp))
+
+            when {
+                state.isLoading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+                state.error != null -> Column(
+                    Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(state.error!!, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
+                    TextButton(onClick = { screenModel.onIntent(PokemonListIntent.Retry) }) {
+                        Text(stringResource(CoreUiRes.string.string_retry))
+                    }
+                }
+                else -> PokemonGrid(state, screenModel)
+            }
         }
     }
 }

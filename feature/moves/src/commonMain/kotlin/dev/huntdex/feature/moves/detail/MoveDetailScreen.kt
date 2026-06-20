@@ -17,6 +17,23 @@ import cafe.adriel.voyager.koin.koinScreenModel
 import coil3.compose.AsyncImage
 import dev.huntdex.core.domain.model.MoveContestEffect
 import dev.huntdex.core.domain.model.MoveDetail
+import huntdex.core.ui.generated.resources.Res as CoreUiRes
+import huntdex.core.ui.generated.resources.string_back
+import huntdex.core.ui.generated.resources.string_retry
+import huntdex.feature.moves.generated.resources.Res
+import huntdex.feature.moves.generated.resources.contest_appeal
+import huntdex.feature.moves.generated.resources.contest_jam
+import huntdex.feature.moves.generated.resources.move_see_more
+import huntdex.feature.moves.generated.resources.section_contest
+import huntdex.feature.moves.generated.resources.section_learned_by
+import huntdex.feature.moves.generated.resources.section_stats
+import huntdex.feature.moves.generated.resources.stat_accuracy
+import huntdex.feature.moves.generated.resources.stat_category
+import huntdex.feature.moves.generated.resources.stat_power
+import huntdex.feature.moves.generated.resources.stat_pp
+import huntdex.feature.moves.generated.resources.stat_priority
+import huntdex.feature.moves.generated.resources.stat_type
+import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
 data class MoveDetailScreen(val id: Int) : Screen {
@@ -38,7 +55,9 @@ private fun MoveDetailContent(state: MoveDetailState, onIntent: (MoveDetailInten
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(state.error!!)
                 Spacer(Modifier.height(8.dp))
-                Button(onClick = { onIntent(MoveDetailIntent.Retry) }) { Text("Retry") }
+                Button(onClick = { onIntent(MoveDetailIntent.Retry) }) {
+                    Text(stringResource(CoreUiRes.string.string_retry))
+                }
             }
         }
         state.detail != null -> MoveDetailLoaded(state = state, detail = state.detail, onIntent = onIntent)
@@ -54,7 +73,10 @@ private fun MoveDetailLoaded(state: MoveDetailState, detail: MoveDetail, onInten
                 title = { Text(detail.name.replaceFirstChar { it.uppercase() }) },
                 navigationIcon = {
                     IconButton(onClick = { onIntent(MoveDetailIntent.NavigateBack) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(CoreUiRes.string.string_back)
+                        )
                     }
                 }
             )
@@ -65,17 +87,16 @@ private fun MoveDetailLoaded(state: MoveDetailState, detail: MoveDetail, onInten
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Stats section
             item {
                 Card(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("Stats", style = MaterialTheme.typography.titleMedium)
-                        StatRow("Type", detail.type.replaceFirstChar { it.uppercase() })
-                        StatRow("Category", detail.damageClass.replaceFirstChar { it.uppercase() })
-                        StatRow("Power", detail.power?.toString() ?: "—")
-                        StatRow("Accuracy", detail.accuracy?.let { "$it%" } ?: "—")
-                        StatRow("PP", detail.pp.toString())
-                        StatRow("Priority", detail.priority.toString())
+                        Text(stringResource(Res.string.section_stats), style = MaterialTheme.typography.titleMedium)
+                        StatRow(stringResource(Res.string.stat_type), detail.type.replaceFirstChar { it.uppercase() })
+                        StatRow(stringResource(Res.string.stat_category), detail.damageClass.replaceFirstChar { it.uppercase() })
+                        StatRow(stringResource(Res.string.stat_power), detail.power?.toString() ?: "—")
+                        StatRow(stringResource(Res.string.stat_accuracy), detail.accuracy?.let { "$it%" } ?: "—")
+                        StatRow(stringResource(Res.string.stat_pp), detail.pp.toString())
+                        StatRow(stringResource(Res.string.stat_priority), detail.priority.toString())
                         if (detail.effectEntry.isNotBlank()) {
                             Spacer(Modifier.height(4.dp))
                             Text(detail.effectEntry, style = MaterialTheme.typography.bodyMedium)
@@ -91,21 +112,18 @@ private fun MoveDetailLoaded(state: MoveDetailState, detail: MoveDetail, onInten
                 }
             }
 
-            // Contest section (only shown if move has contest data)
             detail.contestEffect?.let { contestEffect ->
                 item { ContestSection(contestEffect = contestEffect) }
             }
 
-            // Learned by section — header
             item {
                 Text(
-                    "Learned by Pokémon",
+                    stringResource(Res.string.section_learned_by),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
             }
 
-            // Each Pokémon as its own lazy item to avoid eagerly composing hundreds of rows
             items(state.learnedByVisible, key = { it.id }) { pokemon ->
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
@@ -132,14 +150,13 @@ private fun MoveDetailLoaded(state: MoveDetailState, detail: MoveDetail, onInten
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
             }
 
-            // "Ver más" button item
             if (state.hasMoreLearnedBy && !state.showAllLearnedBy) {
                 item {
                     OutlinedButton(
                         onClick = { onIntent(MoveDetailIntent.ExpandLearnedBy) },
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                     ) {
-                        Text("Ver más")
+                        Text(stringResource(Res.string.move_see_more))
                     }
                 }
             }
@@ -159,10 +176,10 @@ private fun StatRow(label: String, value: String) {
 private fun ContestSection(contestEffect: MoveContestEffect) {
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Contest", style = MaterialTheme.typography.titleMedium)
-            StatRow("Type", contestEffect.contestType.replaceFirstChar { it.uppercase() })
-            StatRow("Appeal", contestEffect.appeal.toString())
-            StatRow("Jam", contestEffect.jam.toString())
+            Text(stringResource(Res.string.section_contest), style = MaterialTheme.typography.titleMedium)
+            StatRow(stringResource(Res.string.stat_type), contestEffect.contestType.replaceFirstChar { it.uppercase() })
+            StatRow(stringResource(Res.string.contest_appeal), contestEffect.appeal.toString())
+            StatRow(stringResource(Res.string.contest_jam), contestEffect.jam.toString())
             if (contestEffect.effectEntry.isNotBlank()) {
                 Text(contestEffect.effectEntry, style = MaterialTheme.typography.bodyMedium)
             }

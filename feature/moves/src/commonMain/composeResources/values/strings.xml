@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="moves_tab_title">Moves</string>
+    <string name="search_placeholder">Search moves…</string>
+    <string name="section_stats">Stats</string>
+    <string name="stat_type">Type</string>
+    <string name="stat_category">Category</string>
+    <string name="stat_power">Power</string>
+    <string name="stat_accuracy">Accuracy</string>
+    <string name="stat_pp">PP</string>
+    <string name="stat_priority">Priority</string>
+    <string name="section_learned_by">Learned by Pokémon</string>
+    <string name="move_see_more">See more</string>
+    <string name="section_contest">Contest</string>
+    <string name="contest_appeal">Appeal</string>
+    <string name="contest_jam">Jam</string>
+</resources>

@@ -1,6 +1,13 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.kotlin.compose)
+}
+
+compose.resources {
+    publicResClass = true
+    generateResClass = always
 }
 
 kotlin {
@@ -14,6 +21,8 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs.coroutines.core)
+            implementation(compose.runtime)
+            implementation(compose.components.resources)
         }
     }
 }
