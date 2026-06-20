@@ -2,7 +2,6 @@ package dev.huntdex.feature.moves.detail
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
@@ -127,7 +126,7 @@ private fun MoveDetailLoaded(state: MoveDetailState, detail: MoveDetail, onInten
                                 onClick = { onIntent(MoveDetailIntent.ExpandLearnedBy) },
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text("Show more (${detail.learnedBy.size - 10} more)")
+                                Text("Ver más")
                             }
                         }
                     }

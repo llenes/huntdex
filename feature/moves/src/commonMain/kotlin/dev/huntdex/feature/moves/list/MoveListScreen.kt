@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -91,7 +92,9 @@ private fun MoveList(state: MoveListState, onIntent: (MoveListIntent) -> Unit) {
     LazyColumn(Modifier.fillMaxSize()) {
         itemsIndexed(state.displayedMoves) { index, move ->
             if (index == state.displayedMoves.size - 1 && state.hasMore) {
-                onIntent(MoveListIntent.LoadNextPage)
+                LaunchedEffect(index) {
+                    onIntent(MoveListIntent.LoadNextPage)
+                }
             }
             MoveRow(move = move, onClick = { onIntent(MoveListIntent.SelectMove(move.id)) })
             HorizontalDivider()
