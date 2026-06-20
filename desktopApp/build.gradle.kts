@@ -13,6 +13,7 @@ kotlin {
             dependencies {
                 implementation(compose.desktop.currentOs)
                 implementation(compose.material3)
+                implementation(compose.materialIconsExtended)
                 implementation(projects.core.domain)
                 implementation(projects.core.navigation)
                 implementation(projects.core.data)

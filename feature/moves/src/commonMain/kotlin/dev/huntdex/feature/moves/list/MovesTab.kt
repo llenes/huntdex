@@ -11,7 +11,7 @@ object MovesTab : Tab {
     override val options: TabOptions
         @Composable get() = TabOptions(
             index = 1u,
-            title = "Movimientos",
+            title = "Moves",
             icon = rememberVectorPainter(Icons.Filled.Star)
         )
 
