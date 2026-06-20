@@ -85,7 +85,6 @@ private fun MoveListContent(state: MoveListState, onIntent: (MoveListIntent) -> 
             else -> MoveList(state = state, onIntent = onIntent)
         }
     }
-    }
 }
 
 @Composable
